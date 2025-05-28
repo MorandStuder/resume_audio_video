@@ -6,6 +6,7 @@ import sys
 from azure.identity import ClientSecretCredential
 from msgraph.core import GraphClient
 from dotenv import load_dotenv
+import time
 
 # Chargement des variables d'environnement
 load_dotenv()
@@ -162,6 +163,118 @@ def delete_attachment(client, user_id, message_id, attachment_id):
         return False
 
 
+def get_mail_folders(client, user_id):
+    """Récupère tous les dossiers de la boîte mail."""
+    try:
+        endpoint = f"/users/{user_id}/mailFolders"
+        response = client.get(endpoint)
+        if response.status_code == 200:
+            return response.json().get('value', [])
+        else:
+            logging.error(f"Erreur API: {response.status_code}")
+            logging.error(f"Détail erreur API: {response.text}")
+            return []
+    except Exception as e:
+        logging.error(f"Erreur lors de la récupération des dossiers: {str(e)}")
+        return []
+
+
+def get_folder_stats(client, user_id, folder_id):
+    """Récupère les statistiques d'un dossier (nombre d'emails)."""
+    try:
+        endpoint = f"/users/{user_id}/mailFolders/{folder_id}"
+        params = {
+            '$select': 'displayName,totalItemCount,unreadItemCount'
+        }
+        response = client.get(endpoint, params=params)
+        if response.status_code != 200:
+            logging.error(f"Réponse API NOK pour {folder_id}: {response.status_code} {response.text}")
+            return 0, 0
+        folder = response.json()
+        logging.info(f"Réponse brute dossier {folder_id}: {folder}")
+        nb_emails = folder.get('totalItemCount', 0)
+        total_size = 0  # Taille non calculée
+        return nb_emails, total_size
+    except Exception as e:
+        logging.error(f"Erreur lors de la récupération des stats du dossier: {str(e)}")
+        return 0, 0
+
+
+def get_all_mail_folders(client, user_id, parent_id=None, parent_path=""):
+    """Récupère récursivement tous les dossiers et sous-dossiers de la boîte mail."""
+    folders = []
+    try:
+        if parent_id:
+            endpoint = f"/users/{user_id}/mailFolders/{parent_id}/childFolders"
+        else:
+            endpoint = f"/users/{user_id}/mailFolders"
+        response = client.get(endpoint)
+        if response.status_code != 200:
+            logging.error(f"Erreur API dossiers: {response.status_code} {response.text}")
+            return folders
+        for folder in response.json().get('value', []):
+            folder_id = folder.get('id')
+            folder_name = folder.get('displayName', 'Sans nom')
+            full_path = f"{parent_path}/{folder_name}" if parent_path else folder_name
+            folders.append({'id': folder_id, 'path': full_path})
+            # Appel récursif pour les sous-dossiers
+            folders.extend(get_all_mail_folders(client, user_id, folder_id, full_path))
+    except Exception as e:
+        logging.error(f"Erreur lors de la récupération récursive des dossiers: {str(e)}")
+    return folders
+
+
+def create_config_file(client, user_id):
+    """Crée le fichier Excel de configuration pour le nettoyage (tous dossiers et sous-dossiers)."""
+    try:
+        logging.info("Création du fichier de configuration")
+        folders = get_all_mail_folders(client, user_id)
+        config_data = []
+
+        for folder in folders:
+            folder_id = folder['id']
+            folder_path = folder['path']
+            nb_emails, total_size = get_folder_stats(client, user_id, folder_id)
+            config_data.append({
+                "Nom du dossier": folder_path,
+                "Nombre d'emails": nb_emails,
+                "Taille totale (Go)": round(total_size / (1024*1024*1024), 2),
+                "Action": "",  # À remplir manuellement
+                "Seuil Taille PJ (Mo)": "",  # À remplir manuellement
+                "Seuil Âge (années)": ""  # À remplir manuellement
+            })
+
+        # Création du DataFrame et sauvegarde
+        df = pd.DataFrame(config_data)
+        output_file = "config_nettoyage.xlsx"
+        temp_file = "config_nettoyage_temp.xlsx"
+
+        while True:
+            try:
+                df.to_excel(temp_file, index=False)
+                if os.path.exists(output_file):
+                    os.remove(output_file)
+                os.rename(temp_file, output_file)
+                logging.info(f"Fichier de configuration sauvegardé dans {output_file}")
+                break
+            except PermissionError as e:
+                if hasattr(e, 'winerror') and e.winerror == 32:
+                    print(f"\nLe fichier {output_file} est ouvert. Veuillez le fermer puis appuyez sur Entrée pour réessayer, ou Ctrl+C pour annuler.")
+                    input()
+                    continue
+                else:
+                    logging.error(f"Erreur lors de la sauvegarde: {str(e)}")
+                    raise
+            except Exception as e:
+                logging.error(f"Erreur lors de la sauvegarde: {str(e)}")
+                raise
+
+        return df
+    except Exception as e:
+        logging.error(f"Erreur lors de la création du fichier de configuration: {str(e)}")
+        raise
+
+
 def main():
     """Fonction principale."""
     try:
@@ -171,11 +284,18 @@ def main():
         if not user_id:
             user_id = input("Entrez l'email de l'utilisateur à traiter : ")
 
-        # Création du récapitulatif
+        # Création du récapitulatif des emails
         recap_df = create_email_summary(client, user_id)
         print(
             f"\nRécapitulatif des emails créé ({len(recap_df)} emails trouvés). "
             "Veuillez vérifier le fichier recap_emails.xlsx"
+        )
+
+        # Création du fichier de configuration
+        config_df = create_config_file(client, user_id)
+        print(
+            f"\nFichier de configuration créé ({len(config_df)} dossiers trouvés). "
+            "Veuillez configurer les règles de nettoyage dans config_nettoyage.xlsx"
         )
 
         # Demande de confirmation pour le nettoyage
