@@ -1,0 +1,47 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.App-header {
+  flex-shrink: 0;
+}
+
+main {
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+/* Styles pour les colonnes */
+.overflow-auto {
+  scrollbar-width: thin;
+}
+
+/* Style pour les étoiles de notation */
+.star-rating {
+  color: #ffc107;
+}
+
+/* Styles pour l'éditeur Quill */
+.ql-container {
+  height: auto !important;
+  min-height: 200px;
+}
+
+.ql-editor {
+  min-height: 200px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+  
+  .col-md-3, .col-md-5, .col-md-4 {
+    width: 100%;
+    height: auto;
+    max-height: 33vh;
+  }
+}

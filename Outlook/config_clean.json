@@ -1,0 +1,6 @@
+{
+  "size_threshold_mb": 0.001,
+  "age_threshold_days": -1,
+  "backup_attachments": false,
+  "limit": 3
+}

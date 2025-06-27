@@ -1,3 +1,6 @@
+# Environment variables
+.env
+
 # Python
 __pycache__/
 *.py[cod]
@@ -34,10 +37,16 @@ ENV/
 # Project specific
 *.log
 *.xlsx
+*.xls
 o365_token.txt
-.env
 
 # Windows
 Thumbs.db
 ehthumbs.db
-Desktop.ini 
+Desktop.ini
+
+# Backup files
+sauvegardes_pj/
+
+# Temporary files
+*_temp.xlsx 

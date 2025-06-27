@@ -1,104 +1,150 @@
 # Outlook Cleaner
 
-Un outil Python pour nettoyer et gérer votre boîte mail Outlook 365, permettant de supprimer automatiquement les emails et pièces jointes selon des règles personnalisables.
+Un outil pour nettoyer automatiquement votre boîte mail Outlook 365 en fonction de règles configurables.
 
 ## Fonctionnalités
 
-- Authentification sécurisée avec Microsoft Graph API
-- Analyse des dossiers et des emails
-- Génération de rapports Excel détaillés
-- Nettoyage personnalisable basé sur :
-  - Taille des pièces jointes
-  - Âge des emails
-  - Dossiers spécifiques
-- Interface interactive pour la confirmation des suppressions
+- Analyse de la boîte mail et création d'un récapitulatif des emails
+- Configuration des règles de nettoyage via un fichier Excel
+- Sauvegarde automatique des pièces jointes avant suppression
+- Nettoyage des pièces jointes trop volumineuses
+- Nettoyage des emails avec pièces jointes trop volumineuses
+- Mise à jour automatique des statistiques tout en préservant les règles
+
+## Scripts disponibles
+
+### 1. `clean_sent_items_simple.py` (RECOMMANDÉ)
+Script simplifié et robuste pour nettoyer les pièces jointes des éléments envoyés.
+
+**Avantages :**
+- Gestion robuste des erreurs API
+- Mode test par défaut (dry-run)
+- Configuration flexible via ligne de commande ou fichier JSON
+- Logs détaillés
+- Retry automatique en cas de timeout
+
+**Utilisation :**
+```bash
+# Test basique (mode dry-run)
+python clean_sent_items_simple.py
+
+# Avec paramètres personnalisés
+python clean_sent_items_simple.py --size-threshold-mb 5 --age-threshold-days 30 --limit 100
+
+# Exécution réelle (ATTENTION !)
+python clean_sent_items_simple.py --size-threshold-mb 10 --age-threshold-days 365 --execute
+
+# Filtrage par mot-clé dans l'objet
+python clean_sent_items_simple.py --subject-filter "rapport" --limit 50
+```
+
+**Options disponibles :**
+- `--size-threshold-mb` : Seuil de taille en Mo (défaut: 10)
+- `--age-threshold-days` : Âge minimum en jours (défaut: 365, -1 pour tous)
+- `--subject-filter` : Mot-clé dans l'objet
+- `--limit` : Nombre max d'emails à traiter (défaut: 1000)
+- `--folder` : Dossier à traiter (défaut: sentitems)
+- `--execute` : Exécuter réellement (sans ce flag = mode test)
+- `--no-backup` : Ne pas sauvegarder les PJ
+
+### 2. `diagnostic_emails.py`
+Script de diagnostic pour analyser les emails et leurs pièces jointes.
+
+**Utilisation :**
+```bash
+python diagnostic_emails.py
+```
+
+### 3. `outlook_cleaner.py`
+Script principal avec interface Excel (plus complexe).
 
 ## Prérequis
 
 - Python 3.8 ou supérieur
-- Un compte Microsoft 365
-- Une application enregistrée dans Azure AD avec les permissions appropriées
+- Un compte Microsoft 365 avec accès à l'API Graph
+- Les permissions nécessaires pour l'application Azure AD
 
 ## Installation
 
-1. Clonez le repository :
+1. Clonez ce dépôt :
 ```bash
 git clone https://github.com/votre-username/outlook-cleaner.git
 cd outlook-cleaner
 ```
 
-2. Créez un environnement virtuel et activez-le :
-```bash
-python -m venv venv
-# Sur Windows
-venv\Scripts\activate
-# Sur Linux/Mac
-source venv/bin/activate
-```
-
-3. Installez les dépendances :
+2. Installez les dépendances :
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Créez un fichier `.env` à la racine du projet avec vos identifiants :
-```env
+3. Créez un fichier `.env` avec vos identifiants :
+```
 OUTLOOK_CLIENT_ID=votre_client_id
 OUTLOOK_CLIENT_SECRET=votre_client_secret
-OUTLOOK_USER_EMAIL=utilisateur@domaine.com
+TENANT_ID=votre_tenant_id
+OUTLOOK_USER_EMAIL=votre_email
 ```
 
-## Configuration
+## Utilisation recommandée
 
-1. Créez une application dans le [Portail Azure](https://portal.azure.com)
-2. Configurez les permissions suivantes :
-   - Microsoft Graph API
-   - Mail.ReadWrite
-   - Mail.Send
-3. Notez le Client ID et le Client Secret
-4. Ajoutez-les dans le fichier `.env`
+### Démarrage rapide avec `clean_sent_items_simple.py`
 
-## Utilisation
-
-1. Lancez le script :
+1. **Test initial** (recommandé) :
 ```bash
-python outlook_cleaner.py
+python clean_sent_items_simple.py --limit 10
 ```
 
-2. Suivez les étapes interactives :
-   - Le script générera d'abord un récapitulatif des emails
-   - Un fichier Excel de configuration sera créé
-   - Modifiez les règles de nettoyage dans le fichier Excel
-   - Confirmez les suppressions lors de l'exécution
+2. **Analyse avec diagnostic** :
+```bash
+python diagnostic_emails.py
+```
+
+3. **Nettoyage ciblé** :
+```bash
+# Test sur emails de plus de 30 jours avec PJ > 5 Mo
+python clean_sent_items_simple.py --age-threshold-days 30 --size-threshold-mb 5 --limit 100
+
+# Exécution réelle si le test convient
+python clean_sent_items_simple.py --age-threshold-days 30 --size-threshold-mb 5 --limit 100 --execute
+```
+
+### Configuration avancée
+
+Le script sauvegarde automatiquement la configuration dans `config_clean.json`. Vous pouvez modifier ce fichier ou utiliser les paramètres en ligne de commande.
 
 ## Structure des fichiers
 
-```
-outlook-cleaner/
-├── .env                    # Variables d'environnement (à créer)
-├── .gitignore             # Fichiers ignorés par Git
-├── README.md              # Documentation
-├── requirements.txt       # Dépendances Python
-├── outlook_cleaner.py     # Script principal
-├── config_nettoyage.xlsx  # Configuration générée
-└── recap_emails.xlsx      # Récapitulatif généré
-```
+- `clean_sent_items_simple.py` : Script de nettoyage simplifié (RECOMMANDÉ)
+- `diagnostic_emails.py` : Script de diagnostic
+- `outlook_cleaner.py` : Programme principal avec interface Excel
+- `config_clean.json` : Configuration du script simplifié
+- `config_nettoyage.xlsx` : Configuration des règles de nettoyage
+- `recap_emails.xlsx` : Récapitulatif des emails
+- `sauvegardes_pj/` : Dossier de sauvegarde des pièces jointes
+- `*.log` : Fichiers de log
 
 ## Sécurité
 
-- Les identifiants sont stockés dans un fichier `.env` (non versionné)
-- Le token d'authentification est stocké localement
-- Les suppressions nécessitent une confirmation manuelle
+- Les identifiants sont stockés dans le fichier `.env` (non versionné)
+- Mode test par défaut (dry-run) pour éviter les suppressions accidentelles
+- Les pièces jointes sont sauvegardées avant suppression
+- Confirmation requise avant toute suppression réelle
 
-## Contribution
+## Dépannage
 
-Les contributions sont les bienvenues ! N'hésitez pas à :
-1. Fork le projet
-2. Créer une branche pour votre fonctionnalité
-3. Commiter vos changements
-4. Pousser vers la branche
-5. Ouvrir une Pull Request
+### Erreurs courantes
+
+1. **"Unterminated string starting at line 1"** : Résolu dans `clean_sent_items_simple.py`
+2. **"Pièces jointes trouvées: 0"** : Vérifiez les paramètres de filtrage
+3. **Timeout API** : Le script gère automatiquement les retry
+
+### Conseils
+
+- Commencez toujours par un test avec `--limit 10`
+- Utilisez `diagnostic_emails.py` pour analyser vos emails
+- Vérifiez les logs dans `clean_sent_items.log`
+- Testez d'abord en mode dry-run (sans `--execute`)
 
 ## Licence
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails. 
+MIT 

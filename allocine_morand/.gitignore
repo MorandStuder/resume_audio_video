@@ -1,0 +1,31 @@
+# Fichiers de configuration
+config.json
+*.env
+config.py 
+
+# Dossiers de sortie
+output/
+*.csv
+
+# Autres
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Système
+.DS_Store
+Thumbs.db
+
+# Ajouter cette ligne
+
+OLD/
