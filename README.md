@@ -27,17 +27,60 @@ Ce projet est un ensemble d'outils pour le traitement audio, la transcription et
 - `pyproject.toml` : Configuration moderne du projet
 - `LICENSE` : Licence MIT du projet
 
+## Prérequis
+
+### ffmpeg (obligatoire pour l'audio)
+Ce projet nécessite [ffmpeg](https://ffmpeg.org/) pour l'extraction et l'encodage audio (MP3, WAV, etc.).
+
+- **Windows** :
+  1. (Recommandé) Installer via winget :
+     ```bash
+     winget install ffmpeg
+     ```
+     (ou `winget install Gyan.FFmpeg` selon le catalogue)
+     > Le PATH est configuré automatiquement.
+  2. (Alternative manuelle) Télécharger la version statique sur https://www.gyan.dev/ffmpeg/builds/
+  3. Décompresser (ex : `C:\ffmpeg`)
+  4. Ajouter `C:\ffmpeg\bin` à la variable d'environnement `PATH`
+  5. Vérifier dans un terminal : `ffmpeg -version`
+- **macOS** :
+  ```bash
+  brew install ffmpeg
+  ```
+- **Linux** :
+  ```bash
+  sudo apt install ffmpeg
+  ```
+
 ## Installation
 
 ### Installation via pip
 ```bash
 pip install -e .
 ```
+Création env
+python -m venv venv
+  .\venv\Scripts\activate
 
 ### Installation des Dépendances
 ```bash
 pip install -r requirements.txt
 ```
+
+### Découpage Audio (NOUVEAU)
+Le découpage audio/vidéo utilise maintenant le script `src/Split.py` (plus de pydub, compatible Python 3.13+).
+
+> Le découpage fonctionne aussi bien pour les fichiers audio (MP3, WAV, etc.) que vidéo (MP4, AVI, etc.).
+
+- **En ligne de commande** :
+  ```bash
+  python src/Split.py chemin/vers/ta_video.mp4 -d 30 -o segments_audio
+  ```
+  - `-d` : durée des segments en minutes (défaut : 30)
+  - `-o` : dossier de sortie (défaut : segments_audio)
+
+- **Dans le pipeline complet** :
+  Le script principal `process_gloabl.py` utilise automatiquement cette méthode.
 
 ### Configuration
 1. Créer un fichier `config.json` à la racine du projet avec vos clés API :
@@ -160,6 +203,9 @@ resumes/
 - La transcription utilise le modèle Whisper "base" (paramétrable)
 - Les résumés peuvent être générés avec différents modèles d'IA
 - Tous les fichiers sont encodés en UTF-8
+- ffmpeg doit être installé et accessible dans le PATH
+- Le découpage audio ne dépend plus de pydub/audioop (compatible Python 3.13+)
+- Les autres scripts (transcription, résumé, concaténation) restent inchangés
 
 ## Dépannage
 - Vérifier que le fichier `config.json` existe avec les clés API correctes

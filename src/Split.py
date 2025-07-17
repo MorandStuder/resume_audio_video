@@ -1,93 +1,65 @@
-from pydub import AudioSegment
 import os
-import tkinter as tk
-from tkinter import filedialog
+import numpy as np
+import librosa
+import soundfile as sf
+import argparse
+from moviepy.video.io.VideoFileClip import VideoFileClip
 
-
-def get_video_path():
-    """Ouvre une fenêtre de sélection de fichier vidéo"""
-    # Cacher la fenêtre principale de tkinter
-    root = tk.Tk()
-    root.withdraw()
-
-    # Ouvrir le sélecteur de fichier
-    file_path = filedialog.askopenfilename(
-        title="Sélectionnez votre fichier vidéo",
-        filetypes=[
-            ("Fichiers vidéo", "*.mp4 *.avi *.mkv *.mov"),
-            ("Tous les fichiers", "*.*")
-        ],
-        initialdir=os.path.expanduser("~")  # Démarre dans le dossier utilisateur
-    )
-
-    # Vérifier si un fichier a été sélectionné
-    if file_path and os.path.exists(file_path):
-        return file_path
-    else:
-        print("❌ Erreur : Aucun fichier sélectionné.")
-        return None
-
-
-# === PARAMÈTRES ===
-print("=== CONFIGURATION ===")
-print("\nOuverture de la fenêtre de sélection...")
-input_video_path = get_video_path()
-
-if input_video_path:
-    output_directory = "segments_audio"
-    segment_duration_min = 30  # Durée en minutes
-
-    # === CRÉATION DU DOSSIER DE SORTIE ===
+def split_audio(input_path: str, segment_duration_min: int = 30, output_directory: str = "segments_audio") -> list[str]:
+    """
+    Découpe un fichier audio (mp3, wav, etc.) ou vidéo (mp4, avi, etc.) en segments MP3 de durée fixe.
+    - Si le fichier est une vidéo, l'audio est extrait automatiquement.
+    - Si le fichier est un audio, il est traité directement.
+    Les segments sont exportés dans le dossier de sortie.
+    """
     os.makedirs(output_directory, exist_ok=True)
+    file_ext = os.path.splitext(input_path)[1].lower()
+    audio_path = input_path
 
-    try:
-        # Charger le fichier audio
-        print("\nChargement de la vidéo...")
-        audio = AudioSegment.from_file(input_video_path, format="mp4")
-        
-        # Calculer la durée des segments
-        segment_duration_ms = segment_duration_min * 60 * 1000  # En millisecondes
-        total_duration = len(audio)
-        num_segments = (
-            total_duration + segment_duration_ms - 1
-        ) // segment_duration_ms
+    # Si c'est une vidéo, extraire l'audio temporairement
+    if file_ext in [".mp4", ".avi", ".mkv", ".mov"]:
+        print(f"Extraction de l'audio depuis la vidéo {input_path}...")
+        with VideoFileClip(input_path) as video:
+            audio_path = os.path.join(output_directory, "_temp_audio.wav")
+            video.audio.write_audiofile(audio_path, codec="pcm_s16le")
+    else:
+        print(f"Traitement direct du fichier audio {input_path}...")
 
-        print(
-            f"\nDécoupage de la vidéo en {num_segments} segments "
-            f"de {segment_duration_min} minutes..."
-        )
+    # Charger l'audio
+    print("Chargement de l'audio...")
+    audio, sr = librosa.load(audio_path, sr=None, mono=True)
+    total_duration_sec = audio.shape[0] / sr
+    segment_duration_sec = segment_duration_min * 60
+    num_segments = int(np.ceil(total_duration_sec / segment_duration_sec))
 
-        # Découper et exporter les segments
-        for i in range(num_segments):
-            start = i * segment_duration_ms
-            end = min((i + 1) * segment_duration_ms, total_duration)
-            
-            segment = audio[start:end]
-            output_path = os.path.join(
-                output_directory,
-                f"segment_{i+1:02d}.mp3"
-            )
-            
-            print(f"\nExport du segment {i+1}...")
-            segment.export(
-                output_path,
-                format="mp3",
-                parameters=["-q:a", "0"]  # Meilleure qualité MP3
-            )
-            print(f"✅ Segment {i+1} exporté : {output_path}")
+    print(f"Découpage en {num_segments} segments de {segment_duration_min} minutes...")
+    segments_paths = []
+    for i in range(num_segments):
+        start_sec = i * segment_duration_sec
+        end_sec = min((i + 1) * segment_duration_sec, total_duration_sec)
+        start_sample = int(start_sec * sr)
+        end_sample = int(end_sec * sr)
+        segment = audio[start_sample:end_sample]
+        output_path = os.path.join(output_directory, f"segment_{i+1:02d}.mp3")
+        sf.write(output_path, segment, sr, format='MP3')
+        segments_paths.append(output_path)
+        print(f"✅ Segment {i+1} exporté : {output_path}")
 
-        print("\n✅ Tous les segments ont été exportés avec succès!")
-        print(
-            f"📂 Vous les trouverez dans le dossier : "
-            f"{os.path.abspath(output_directory)}"
-        )
+    # Nettoyage du fichier temporaire
+    if audio_path != input_path and os.path.exists(audio_path):
+        os.remove(audio_path)
 
-    except FileNotFoundError:
-        print(
-            f"\n❌ Erreur : Le fichier vidéo n'a pas été trouvé : "
-            f"{input_video_path}"
-        )
-    except Exception as e:
-        print(f"\n❌ Une erreur s'est produite : {str(e)}")
+    print(f"\n✅ Tous les segments ont été exportés dans {output_directory}!")
+    return segments_paths
 
-input("\nAppuyez sur Entrée pour fermer...")
+
+def main():
+    parser = argparse.ArgumentParser(description="Découpe un fichier vidéo/audio en segments MP3.")
+    parser.add_argument("input_path", help="Chemin du fichier vidéo ou audio à découper")
+    parser.add_argument("-d", "--duration", type=int, default=30, help="Durée des segments en minutes (défaut: 30)")
+    parser.add_argument("-o", "--output", default="segments_audio", help="Dossier de sortie (défaut: segments_audio)")
+    args = parser.parse_args()
+    split_audio(args.input_path, args.duration, args.output)
+
+if __name__ == "__main__":
+    main()

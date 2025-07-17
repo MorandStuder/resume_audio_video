@@ -1,4 +1,3 @@
-from pydub import AudioSegment
 import os
 import tkinter as tk
 from tkinter import filedialog
@@ -6,6 +5,8 @@ import whisper
 import json
 from pathlib import Path
 from openai import OpenAI
+from Split import split_audio  # Import du module commun
+from moviepy.video.io.VideoFileClip import VideoFileClip  # Pour compatibilité moviepy 2.x
 
 
 def get_media_path():
@@ -30,38 +31,9 @@ def get_media_path():
     return None
 
 
-def split_audio(input_path, segment_duration_min=30):
-    """Découpe le fichier en segments audio"""
-    output_directory = "segments_audio"
-    os.makedirs(output_directory, exist_ok=True)
-
-    print("\n=== ÉTAPE 1: DÉCOUPAGE AUDIO ===")
-    print("Chargement du fichier...")
-
-    # Déterminer le format du fichier d'entrée
-    file_extension = os.path.splitext(input_path)[1].lower()
-    if file_extension in [".mp4", ".avi", ".mkv", ".mov"]:
-        audio = AudioSegment.from_file(input_path, format="mp4")
-    else:
-        audio = AudioSegment.from_file(input_path)
-
-    segment_duration_ms = segment_duration_min * 60 * 1000
-    total_duration = len(audio)
-    num_segments = (total_duration + segment_duration_ms - 1) // segment_duration_ms
-
-    segments_paths = []
-    for i in range(num_segments):
-        start = i * segment_duration_ms
-        end = min((i + 1) * segment_duration_ms, total_duration)
-        segment = audio[start:end]
-        output_path = os.path.join(output_directory, f"segment_{i+1:02d}.mp3")
-
-        print(f"Export du segment {i+1}...")
-        segment.export(output_path, format="mp3", parameters=["-q:a", "0"])
-        segments_paths.append(output_path)
-        print(f"✅ Segment {i+1} exporté")
-
-    return segments_paths
+def split_audio_legacy(input_path, segment_duration_min=30):
+    """Ancienne fonction, redirigée vers le module commun split_audio."""
+    return split_audio(input_path, segment_duration_min, output_directory="segments_audio")
 
 
 def transcribe_segments(segments_paths):
@@ -187,7 +159,7 @@ def main():
 
     try:
         # Découpage audio
-        segments_paths = split_audio(input_path)
+        segments_paths = split_audio_legacy(input_path)
 
         # Transcription
         transcriptions = transcribe_segments(segments_paths)
