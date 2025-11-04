@@ -34,16 +34,22 @@ def split_audio(input_path: str, segment_duration_min: int = 30, output_director
 
     print(f"Découpage en {num_segments} segments de {segment_duration_min} minutes...")
     segments_paths = []
-    for i in range(num_segments):
-        start_sec = i * segment_duration_sec
-        end_sec = min((i + 1) * segment_duration_sec, total_duration_sec)
-        start_sample = int(start_sec * sr)
-        end_sample = int(end_sec * sr)
-        segment = audio[start_sample:end_sample]
-        output_path = os.path.join(output_directory, f"segment_{i+1:02d}.mp3")
-        sf.write(output_path, segment, sr, format='MP3')
-        segments_paths.append(output_path)
-        print(f"✅ Segment {i+1} exporté : {output_path}")
+    
+    # Import tqdm pour la barre de progression
+    from tqdm import tqdm
+    
+    with tqdm(total=num_segments, desc="Découpage audio", unit="segment") as pbar:
+        for i in range(num_segments):
+            start_sec = i * segment_duration_sec
+            end_sec = min((i + 1) * segment_duration_sec, total_duration_sec)
+            start_sample = int(start_sec * sr)
+            end_sample = int(end_sec * sr)
+            segment = audio[start_sample:end_sample]
+            output_path = os.path.join(output_directory, f"segment_{i+1:02d}.mp3")
+            pbar.set_description(f"Découpage du segment {i+1}/{num_segments}")
+            sf.write(output_path, segment, sr, format='MP3')
+            segments_paths.append(output_path)
+            pbar.update(1)
 
     # Nettoyage du fichier temporaire
     if audio_path != input_path and os.path.exists(audio_path):
