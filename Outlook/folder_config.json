@@ -1,0 +1,811 @@
+{
+  "Archive": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": false,
+    "history": []
+  },
+  "Boîte de réception": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": false,
+    "history": []
+  },
+  "0. A lire": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Boîte de réception",
+    "history": []
+  },
+  "1. Mes missions": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Boîte de réception",
+    "history": []
+  },
+  "2. Commercial": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Boîte de réception",
+    "history": []
+  },
+  "3. Interne": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Boîte de réception",
+    "history": []
+  },
+  "4. Ecosysteme": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Boîte de réception",
+    "history": []
+  },
+  "5. Personnel": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Boîte de réception",
+    "history": []
+  },
+  "CRA": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Boîte de réception",
+    "history": []
+  },
+  "Boîte d'envoi": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": false,
+    "history": []
+  },
+  "Brouillons": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": false,
+    "history": []
+  },
+  "Courrier indésirable": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": false,
+    "history": []
+  },
+  "Éléments envoyés": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": false,
+    "history": []
+  },
+  "Éléments supprimés": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": false,
+    "history": []
+  },
+  "Flux RSS": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": false,
+    "history": []
+  },
+  "Historique des conversations": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": false,
+    "history": []
+  },
+  "Problèmes de synchronisation": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": false,
+    "history": []
+  },
+  "Conflits": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Problèmes de synchronisation",
+    "history": []
+  },
+  "Défaillances du serveur": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Problèmes de synchronisation",
+    "history": []
+  },
+  "Défaillances locales": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Problèmes de synchronisation",
+    "history": []
+  },
+  "Partie supérieure de la banque d'informations": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": false,
+    "history": []
+  },
+  "Air Liquide": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "1. Mes missions",
+    "history": []
+  },
+  "Archives": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "1. Mes missions",
+    "history": []
+  },
+  "21 CP": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "ADBS": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "Alcatel": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "Anaveo": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "Ardian": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "Atlantic": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "AXA": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "Cathay": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "Club Med": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "Consolis": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "Autres": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "1. Mes missions",
+    "history": []
+  },
+  "CDC": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "1. Mes missions",
+    "history": []
+  },
+  "Covea": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "1. Mes missions",
+    "history": []
+  },
+  "EdR": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "1. Mes missions",
+    "history": []
+  },
+  "Generali": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "1. Mes missions",
+    "history": []
+  },
+  "GRDF": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "1. Mes missions",
+    "history": []
+  },
+  "Kering": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "1. Mes missions",
+    "history": []
+  },
+  "LVMH": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "1. Mes missions",
+    "history": []
+  },
+  "Axa": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "HTC": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "LG": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "Servair": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "St Gobain": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "Telemarketing": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Archives",
+    "history": []
+  },
+  "Autres comm": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "2. Commercial",
+    "history": []
+  },
+  "Comm AO Publics": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "2. Commercial",
+    "history": []
+  },
+  "Comm B*": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "2. Commercial",
+    "history": []
+  },
+  "Comm Energie": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "2. Commercial",
+    "history": []
+  },
+  "Comm Finance": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "2. Commercial",
+    "history": []
+  },
+  "Comm Orange": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "2. Commercial",
+    "history": []
+  },
+  "Comm Public": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "2. Commercial",
+    "history": []
+  },
+  "Comm Retail": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "2. Commercial",
+    "history": []
+  },
+  "Comm Telco": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "2. Commercial",
+    "history": []
+  },
+  "Administration": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "3. Interne",
+    "history": []
+  },
+  "CIR": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "3. Interne",
+    "history": []
+  },
+  "Club IA": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "3. Interne",
+    "history": []
+  },
+  "Communication RP": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "3. Interne",
+    "history": []
+  },
+  "Finance et gestion": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "3. Interne",
+    "history": []
+  },
+  "Locaux": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "3. Interne",
+    "history": []
+  },
+  "Marketing": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "3. Interne",
+    "history": []
+  },
+  "R&D": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "3. Interne",
+    "history": []
+  },
+  "RH": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "3. Interne",
+    "history": []
+  },
+  "RSE": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "3. Interne",
+    "history": []
+  },
+  "Equancy": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "4. Ecosysteme",
+    "history": []
+  },
+  "Bateau, voile, mer, etc.": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "5. Personnel",
+    "history": []
+  },
+  "CISV": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "5. Personnel",
+    "history": []
+  },
+  "Collector": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "5. Personnel",
+    "history": []
+  },
+  "Enfants": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "5. Personnel",
+    "history": []
+  },
+  "Famille": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "5. Personnel",
+    "history": []
+  },
+  "Finance": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "5. Personnel",
+    "history": []
+  },
+  "Hubic": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "5. Personnel",
+    "history": []
+  },
+  "Immobilier": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "5. Personnel",
+    "history": []
+  },
+  "Copro 23": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Immobilier",
+    "history": []
+  },
+  "Locatif": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Immobilier",
+    "history": []
+  },
+  "Neuilly": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Immobilier",
+    "history": []
+  },
+  "Refinancement": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Immobilier",
+    "history": []
+  },
+  "St LU": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "Immobilier",
+    "history": []
+  },
+  "Impots": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "5. Personnel",
+    "history": []
+  },
+  "Learning": {
+    "actions": {
+      "delete_attachments": false,
+      "max_age_days": 365,
+      "min_size_mb": 10.0
+    },
+    "inherited": true,
+    "parent": "5. Personnel",
+    "history": []
+  }
+}

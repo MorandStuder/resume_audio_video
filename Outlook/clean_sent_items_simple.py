@@ -5,13 +5,11 @@ Utilise la même logique que le diagnostic qui fonctionne.
 """
 
 import os
-import sys
 import logging
 import argparse
 import requests
 import json
 from datetime import datetime, timedelta
-from tqdm import tqdm
 from azure.identity import ClientSecretCredential
 from dotenv import load_dotenv
 import time
@@ -35,15 +33,18 @@ logging.getLogger("msal").setLevel(logging.WARNING)
 
 CONFIG_FILE = 'config_clean.json'
 
+
 def load_config():
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
     return {}
 
+
 def save_config(config):
     with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
         json.dump(config, f, indent=2, ensure_ascii=False)
+
 
 def get_access_token():
     try:
@@ -66,7 +67,9 @@ def get_access_token():
         logging.error(f"Erreur lors de l'obtention du token: {str(e)}")
         raise
 
-def get_messages(user_id, folder_id='sentitems', limit=1000, older_than_days=None, subject_filter=None):
+
+def get_messages(user_id, folder_id='sentitems', limit=1000,
+                older_than_days=None, subject_filter=None):
     try:
         access_token = get_access_token()
         headers = {
@@ -106,19 +109,26 @@ def get_messages(user_id, folder_id='sentitems', limit=1000, older_than_days=Non
                         data = response.json()
                     except json.JSONDecodeError as e:
                         logging.error(f"Erreur de parsing JSON: {str(e)}")
-                        logging.error(f"Taille de la réponse: {len(response.text)} caractères")
+                        logging.error(
+                            f"Taille de la réponse: {len(response.text)} caractères"
+                        )
                         # Si la réponse est trop volumineuse, on essaie sans expand
                         if '$expand' in params:
-                            logging.info("Tentative sans expansion des pièces jointes...")
+                            logging.info(
+                                "Tentative sans expansion des pièces jointes..."
+                            )
                             params.pop('$expand')
                             response = requests.get(
-                                endpoint, headers=headers, params=params, timeout=60
+                                endpoint, headers=headers, params=params, 
+                                timeout=60
                             )
                             if response.status_code == 200:
                                 try:
                                     data = response.json()
                                 except json.JSONDecodeError:
-                                    logging.error("Impossible de parser la réponse JSON")
+                                    logging.error(
+                                        "Impossible de parser la réponse JSON"
+                                    )
                                     break
                             else:
                                 break
@@ -128,7 +138,8 @@ def get_messages(user_id, folder_id='sentitems', limit=1000, older_than_days=Non
                     messages = data.get('value', [])
                     all_messages.extend(messages)
                     logging.info(
-                        f"Récupéré {len(messages)} emails (total: {len(all_messages)})"
+                        f"Récupéré {len(messages)} emails "
+                        f"(total: {len(all_messages)})"
                     )
                     next_link = data.get('@odata.nextLink')
                     if not next_link or len(all_messages) >= limit:
@@ -139,14 +150,15 @@ def get_messages(user_id, folder_id='sentitems', limit=1000, older_than_days=Non
                     if retry_count <= max_retries:
                         wait_time = 2 ** retry_count
                         logging.warning(
-                            f"Timeout API (504), nouvelle tentative dans {wait_time}s "
-                            f"(tentative {retry_count}/{max_retries})"
+                            f"Timeout API (504), nouvelle tentative dans "
+                            f"{wait_time}s (tentative {retry_count}/{max_retries})"
                         )
                         time.sleep(wait_time)
                         continue
                     else:
                         logging.error(
-                            f"Trop de timeouts API, arrêt après {max_retries} tentatives"
+                            f"Trop de timeouts API, arrêt après "
+                            f"{max_retries} tentatives"
                         )
                         break
                 else:
@@ -158,14 +170,15 @@ def get_messages(user_id, folder_id='sentitems', limit=1000, older_than_days=Non
                 if retry_count <= max_retries:
                     wait_time = 2 ** retry_count
                     logging.warning(
-                        f"Timeout de connexion, nouvelle tentative dans {wait_time}s "
-                        f"(tentative {retry_count}/{max_retries})"
+                        f"Timeout de connexion, nouvelle tentative dans "
+                        f"{wait_time}s (tentative {retry_count}/{max_retries})"
                     )
                     time.sleep(wait_time)
                     continue
                 else:
                     logging.error(
-                        f"Trop de timeouts de connexion, arrêt après {max_retries} tentatives"
+                        f"Trop de timeouts de connexion, arrêt après "
+                        f"{max_retries} tentatives"
                     )
                     break
             except Exception as e:
@@ -173,7 +186,10 @@ def get_messages(user_id, folder_id='sentitems', limit=1000, older_than_days=Non
                 break
         # Filtrage sur l'objet côté Python si demandé
         if subject_filter:
-            all_messages = [m for m in all_messages if subject_filter.lower() in m.get('subject','').lower()]
+            all_messages = [
+                m for m in all_messages 
+                if subject_filter.lower() in m.get('subject', '').lower()
+            ]
         logging.info(f"Total des emails récupérés: {len(all_messages)}")
         return all_messages[:limit]
     except Exception as e:
@@ -215,13 +231,17 @@ def clean_attachments(config):
         dry_run = config.get('dry_run', True)
         limit = config.get('limit', 1000)
         folder = config.get('folder', 'sentitems')
+        all_attachments = config.get('all_attachments', False)  # Nouvelle option
+        
         print(f"Dossier: {folder}")
         print(f"Seuil de taille: {size_threshold_mb} Mo")
         print(f"Âge minimum: {age_threshold_days} jours")
         print(f"Mot-clé objet: {subject_filter if subject_filter else 'Aucun'}")
         print(f"Sauvegarde des PJ: {'Oui' if backup_attachments else 'Non'}")
         print(f"Mode test: {'Oui' if dry_run else 'Non'}")
+        print(f"Supprimer TOUTES les PJ: {'Oui' if all_attachments else 'Non'}")
         print()
+        
         messages = get_messages(user_id, folder, limit=limit, older_than_days=age_threshold_days, subject_filter=subject_filter)
         if not messages:
             print("Aucun élément trouvé")
@@ -272,8 +292,12 @@ def clean_attachments(config):
                         size_mb = size / (1024 * 1024)
                         print(f"DEBUG: PJ: {name} - {size_mb:.2f} Mo")
                         
-                        if size_mb >= size_threshold_mb:
-                            print(f"DEBUG: PJ {name} dépasse le seuil ({size_mb:.2f} Mo >= {size_threshold_mb} Mo)")
+                        # Si all_attachments est True, on supprime toutes les PJ
+                        # Sinon, on respecte le seuil de taille
+                        should_delete = all_attachments or size_mb >= size_threshold_mb
+                        
+                        if should_delete:
+                            print(f"DEBUG: PJ {name} sera supprimée (taille: {size_mb:.2f} Mo)")
                             total_size_mb += size_mb
                             
                             if not dry_run:
@@ -285,7 +309,7 @@ def clean_attachments(config):
                                 print(f"DEBUG: PJ {name} serait supprimée (mode test)")
                                 attachments_deleted += 1
                         else:
-                            print(f"DEBUG: PJ {name} en dessous du seuil ({size_mb:.2f} Mo < {size_threshold_mb} Mo)")
+                            print(f"DEBUG: PJ {name} conservée (taille: {size_mb:.2f} Mo < {size_threshold_mb} Mo)")
             else:
                 print(f"DEBUG: Aucune pièce jointe à traiter")
         print("\n=== RÉSUMÉ DU NETTOYAGE ===")
@@ -294,6 +318,7 @@ def clean_attachments(config):
         print(f"Pièces jointes supprimées: {attachments_deleted}")
         print(f"Espace libéré: {total_size_mb:.2f} Mo")
         print(f"Mode test: {'Oui' if dry_run else 'Non'}")
+        print(f"Toutes les PJ supprimées: {'Oui' if all_attachments else 'Non'}")
     except Exception as e:
         logging.error(f"Erreur lors du nettoyage: {str(e)}")
         raise
@@ -310,6 +335,7 @@ def main():
     parser.add_argument('--execute', action='store_true', help='Exécuter réellement les suppressions (mode test par défaut)')
     parser.add_argument('--limit', type=int, help='Nombre max d\'emails à traiter (défaut 1000)')
     parser.add_argument('--folder', type=str, help='Nom du dossier à traiter (sentitems, inbox, etc.)')
+    parser.add_argument('--all-attachments', action='store_true', help='Supprimer toutes les pièces jointes sans tenir compte du seuil de taille')
     args = parser.parse_args()
     config = load_config()
     if args.size_threshold_mb is not None:
@@ -326,6 +352,8 @@ def main():
         config['limit'] = args.limit
     if args.folder is not None:
         config['folder'] = args.folder
+    if args.all_attachments:
+        config['all_attachments'] = True
     save_config(config)
     clean_attachments(config)
 

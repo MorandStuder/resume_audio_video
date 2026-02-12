@@ -14,22 +14,18 @@ from dotenv import load_dotenv
 import time
 
 # Chargement des variables d'environnement
+print("Tentative de chargement du .env...")
 load_dotenv()
 
 # Configuration du logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S',
-    handlers=[
-        logging.FileHandler('diagnostic_emails.log'),
-        logging.StreamHandler()
-    ]
+    level=logging.DEBUG,  # Changé en DEBUG pour plus de détails
+    format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
 # Réduire la verbosité des logs Azure
-logging.getLogger("azure.identity").setLevel(logging.WARNING)
-logging.getLogger("msal").setLevel(logging.WARNING)
+logging.getLogger("azure.identity").setLevel(logging.DEBUG)  # Changé en DEBUG
+logging.getLogger("msal").setLevel(logging.DEBUG)  # Changé en DEBUG
 
 
 def get_access_token():
@@ -38,6 +34,11 @@ def get_access_token():
         client_id = os.getenv('OUTLOOK_CLIENT_ID')
         client_secret = os.getenv('OUTLOOK_CLIENT_SECRET')
         tenant_id = os.getenv('TENANT_ID')
+        
+        # Afficher les variables (masquées pour la sécurité)
+        print(f"Client ID présent: {'Oui' if client_id else 'Non'}")
+        print(f"Client Secret présent: {'Oui' if client_secret else 'Non'}")
+        print(f"Tenant ID présent: {'Oui' if tenant_id else 'Non'}")
 
         if not all([client_id, client_secret, tenant_id]):
             raise ValueError(
@@ -45,16 +46,19 @@ def get_access_token():
                 "OUTLOOK_CLIENT_SECRET et TENANT_ID doivent être définies."
             )
 
+        print("Tentative d'authentification avec Azure...")
         credentials = ClientSecretCredential(
             tenant_id=tenant_id,
             client_id=client_id,
             client_secret=client_secret
         )
 
+        print("Obtention du token...")
         token = credentials.get_token("https://graph.microsoft.com/.default")
+        print("Token obtenu avec succès!")
         return token.token
     except Exception as e:
-        logging.error(f"Erreur lors de l'obtention du token: {str(e)}")
+        logging.error(f"Erreur détaillée lors de l'obtention du token: {str(e)}")
         raise
 
 

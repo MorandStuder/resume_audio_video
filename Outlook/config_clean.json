@@ -1,6 +1,7 @@
 {
-  "size_threshold_mb": 0.001,
-  "age_threshold_days": -1,
+  "size_threshold_mb": 10.0,
+  "age_threshold_days": 365,
   "backup_attachments": false,
-  "limit": 3
+  "limit": 1000,
+  "folder": "sentitems"
 }

@@ -1,0 +1,982 @@
+{
+  "sharepoint": {
+    "backup_root": "sauvegardes_pj",
+    "site": "oneleven-my.sharepoint.com",
+    "folder": "/personal/morand_studer_eleven-strategy_com/EoXScuP8bGtCrZHBrGKGB4sBtcaplSLVHsDcH7BalWGTkQ"
+  },
+  "folders": {
+    "Archive": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwB9AAA=",
+      "total_items": 217482,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/0. A lire": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AABhRFB_AAA=",
+      "total_items": 18,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Air Liquide": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAOuV8Y5AAA=",
+      "total_items": 236,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/21 CP": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AALj9etcAAA=",
+      "total_items": 54,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/ADBS": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAAxRwZ2AAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Alcatel": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAC7dgTAAAA=",
+      "total_items": 16,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Anaveo": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAAxRwXRAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Ardian": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AALIiOCtAAA=",
+      "total_items": 331,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Atlantic": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAJPN4sKAAA=",
+      "total_items": 2,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/AXA": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AALj9evhAAA=",
+      "total_items": 387,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Cathay": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAE_fRZuAAA=",
+      "total_items": 153,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Club Med": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AALj9exSAAA=",
+      "total_items": 45,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Consolis": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AALj9eujAAA=",
+      "total_items": 10,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Engie": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAE_fRZhAAA=",
+      "total_items": 385,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Euralis": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AACPe7K8AAA=",
+      "total_items": 46,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Eurazeo": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAIJk02CAAA=",
+      "total_items": 169,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Eurazeo (2)": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAAxRwWEAAA=",
+      "total_items": 72,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Hermes": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAMBjPjGAAA=",
+      "total_items": 32,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/HTC": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAiAAA=",
+      "total_items": 155,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/LBP": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAJ7IqiSAAA=",
+      "total_items": 93,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/LVMH": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAHnehMQAAA=",
+      "total_items": 109,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Naxicap": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAJPN4vQAAA=",
+      "total_items": 21,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/AMEA": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAAddQYFsAAA=",
+      "total_items": 17,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/B2B": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AABhRFCAAAA=",
+      "total_items": 24,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/DO": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBFAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/GFK": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBGAAA=",
+      "total_items": 2,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/ILM": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBPAAA=",
+      "total_items": 75,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/iPhone": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBHAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/MMM": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBIAAA=",
+      "total_items": 1,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/One truth": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBJAAA=",
+      "total_items": 17,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/Paranasse": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAB0frACMAAA=",
+      "total_items": 5,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/Portfolio/Validation": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQBKAAA=",
+      "total_items": 363,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/Portfolio": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBOAAA=",
+      "total_items": 441,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/Sales Pad": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBKAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/YM": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBLAAA=",
+      "total_items": 11,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/Yves & Patrick": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBMAAA=",
+      "total_items": 7,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange/Zoltar": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBNAAA=",
+      "total_items": 1,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Orange": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBEAAA=",
+      "total_items": 336,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Planet Finances": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAAddQYCHAAA=",
+      "total_items": 41,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Primagaz": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAlAAA=",
+      "total_items": 123,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Primagaz (2)": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAI4MG7wAAA=",
+      "total_items": 28,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Recommerce": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAALZtPJ1AAA=",
+      "total_items": 515,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Servair": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAkAAA=",
+      "total_items": 10,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Transilien": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AABhRFDsAAA=",
+      "total_items": 1,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Transilien (2)": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAJPN4ucAAA=",
+      "total_items": 20,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Valeo": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAIiAONXAAA=",
+      "total_items": 329,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/VFLI": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAjAAA=",
+      "total_items": 132,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives/Vinci Park": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAC7dgXoAAA=",
+      "total_items": 178,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Archives": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAC7dgS-AAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Autres": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAH7q3vaAAA=",
+      "total_items": 7,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/CDC": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAWJY5aaAAA=",
+      "total_items": 16,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Covea": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAH6mUG7AAA=",
+      "total_items": 586,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/EdR": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAWJY5bmAAA=",
+      "total_items": 5,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Generali": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAMZc1YbAAA=",
+      "total_items": 233,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/GRDF": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAWJY5Z5AAA=",
+      "total_items": 103,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Kering": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAH6mUG8AAA=",
+      "total_items": 1100,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/LVMH": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAMZc1YaAAA=",
+      "total_items": 344,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Savencia": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAUoGCzSAAA=",
+      "total_items": 72,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/SoGe CDN": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAC7dgS_AAA=",
+      "total_items": 2293,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Total": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAAGpdNPAAA=",
+      "total_items": 1179,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions/Vinci": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AALj9eyEAAA=",
+      "total_items": 1290,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/1. Mes missions": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAfAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Archives/Axa": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAoAAA=",
+      "total_items": 7,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Archives/HTC": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAuAAA=",
+      "total_items": 25,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Archives/LG": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAqAAA=",
+      "total_items": 10,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Archives/Servair": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAtAAA=",
+      "total_items": 25,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Archives/St Gobain": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAnAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Archives/Telemarketing": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAAddQYCtAAA=",
+      "total_items": 42,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Archives": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAAGpdNQAAA=",
+      "total_items": 2,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Autres comm": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAB0BWoAWAAA=",
+      "total_items": 203,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Comm AO Publics": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAE_fRaLAAA=",
+      "total_items": 96,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Comm B*": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQBmAAA=",
+      "total_items": 260,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Comm Energie": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAAddQYAtAAA=",
+      "total_items": 106,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Comm Finance": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AABhRFB8AAA=",
+      "total_items": 167,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Comm Orange": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwArAAA=",
+      "total_items": 1156,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Comm Public": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAE_fRZIAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Comm Retail": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AABhRFEdAAA=",
+      "total_items": 10,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Comm Telco": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAsAAA=",
+      "total_items": 525,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Comm Total": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AABCNNkMAAA=",
+      "total_items": 170,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial/Modèles": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAG0YhYvAAA=",
+      "total_items": 3,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/2. Commercial": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAmAAA=",
+      "total_items": 3261,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/3. Interne/Administration": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAxAAA=",
+      "total_items": 157,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/3. Interne/CIR": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAAddQYCsAAA=",
+      "total_items": 371,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/3. Interne/Club IA": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAO4T-PxAAA=",
+      "total_items": 563,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/3. Interne/Communication RP": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwA9AAA=",
+      "total_items": 352,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/3. Interne/Finance et gestion": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwA4AAA=",
+      "total_items": 5339,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/3. Interne/Locaux": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwA6AAA=",
+      "total_items": 53,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/3. Interne/Marketing": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAIiAOM1AAA=",
+      "total_items": 23,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/3. Interne/R&D": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwA7AAA=",
+      "total_items": 14,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/3. Interne/RH": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwA8AAA=",
+      "total_items": 1539,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/3. Interne/RSE": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAOuV8Z5AAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/3. Interne": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAwAAA=",
+      "total_items": 6,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/4. Ecosysteme/Equancy": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQAVAAA=",
+      "total_items": 4,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/4. Ecosysteme": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBRAAA=",
+      "total_items": 162,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Bateau, voile, mer, etc.": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBTAAA=",
+      "total_items": 123,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/CISV": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAJPN4s2AAA=",
+      "total_items": 521,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Collector": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAB0frACoAAA=",
+      "total_items": 4,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Enfants": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AACPe7L0AAA=",
+      "total_items": 1,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Famille": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwB2AAA=",
+      "total_items": 91,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Finance": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBUAAA=",
+      "total_items": 16,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Hubic": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAAddQYFHAAA=",
+      "total_items": 400,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Immobilier/Copro 23": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBWAAA=",
+      "total_items": 15,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Immobilier/Locatif": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBYAAA=",
+      "total_items": 2103,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Immobilier/Neuilly": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBZAAA=",
+      "total_items": 1111,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Immobilier/Refinancement": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBXAAA=",
+      "total_items": 4,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Immobilier/St LU": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAAGpdMhAAA=",
+      "total_items": 461,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Immobilier": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBVAAA=",
+      "total_items": 22,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Impots": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBaAAA=",
+      "total_items": 128,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Learning": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAMBjPiVAAA=",
+      "total_items": 1,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Bateau": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBfAAA=",
+      "total_items": 10,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Cata": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAHomL6sAAA=",
+      "total_items": 132,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Digital Telco Techno": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBrAAA=",
+      "total_items": 72,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Divers": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQBCAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Ecoles": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQBLAAA=",
+      "total_items": 391,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Excel": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQA5AAA=",
+      "total_items": 36,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Figaro": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBiAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Fnac": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQBHAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Formation": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBhAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Fubiz": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBjAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/HBR": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQBDAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Internaute et JDNet": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBkAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/IT Big & Smart Data": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAAGpdMeAAA=",
+      "total_items": 192,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/ITR": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBlAAA=",
+      "total_items": 829,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Lettres Photo": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBxAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Linked IN": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQBEAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Loisir media culture": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBpAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Maison Deco Travaux": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQBJAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Marchands": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBnAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Marketing Comm": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQBpAAA=",
+      "total_items": 114,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Mc Kinsey": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBoAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Politique": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQA4AAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Que Choisir": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQA6AAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Sante": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAG0YhafAAA=",
+      "total_items": 18,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Strategy Analytics": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBqAAA=",
+      "total_items": 54,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Usine Nouvelle": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AACPe7KPAAA=",
+      "total_items": 400,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info/Vernimmen": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBtAAA=",
+      "total_items": 36,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Lettres d'info": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBcAAA=",
+      "total_items": 341,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.202359"
+    },
+    "Boîte de réception/5. Personnel/Licences etc": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBbAAA=",
+      "total_items": 19,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte de réception/5. Personnel/Mariages": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBvAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte de réception/5. Personnel/Musique HiFi Cinema": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBwAAA=",
+      "total_items": 129,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte de réception/5. Personnel/Photo": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQABXa8399SIQZjVoA4MHjfgAC_YhQBPAAA=",
+      "total_items": 50,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte de réception/5. Personnel/Santé": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAG0YhZKAAA=",
+      "total_items": 37,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte de réception/5. Personnel/Singularity": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCkZe07o0yKTY_YqSsJuCL_AAG0YhakAAA=",
+      "total_items": 791,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte de réception/5. Personnel/Veol/ERDV": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBzAAA=",
+      "total_items": 78,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte de réception/5. Personnel/Veol": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwByAAA=",
+      "total_items": 958,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte de réception/5. Personnel/Vin": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwB0AAA=",
+      "total_items": 1,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte de réception/5. Personnel/Voyages": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwB1AAA=",
+      "total_items": 677,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte de réception/5. Personnel": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwBSAAA=",
+      "total_items": 12,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte de réception/CRA": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwAvAAA=",
+      "total_items": 22,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte de réception": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCh8zoHq9VBQbW5xmdO2wwMAAAAAPZrAAA=",
+      "total_items": 53587,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Boîte d'envoi": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCh8zoHq9VBQbW5xmdO2wwMAAAAAPZsAAA=",
+      "total_items": 79,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Brouillons": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCh8zoHq9VBQbW5xmdO2wwMAAAAAPZ2AAA=",
+      "total_items": 13,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Courrier indésirable": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCh8zoHq9VBQbW5xmdO2wwMAAAAAPanAAA=",
+      "total_items": 1740,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Éléments envoyés": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCh8zoHq9VBQbW5xmdO2wwMAAAAAPZtAAA=",
+      "total_items": 78548,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Éléments supprimés": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCh8zoHq9VBQbW5xmdO2wwMAAAAAPZuAAA=",
+      "total_items": 2294,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Flux RSS": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCSKC-efoqST5k-Rh0MO0wIAA5EwwABAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Historique des conversations": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCh8zoHq9VBQbW5xmdO2wwMAAAAASJQAAA=",
+      "total_items": 300,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Problèmes de synchronisation/Conflits": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCh8zoHq9VBQbW5xmdO2wwMAAAAAR-OAAA=",
+      "total_items": 164,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Problèmes de synchronisation/Défaillances du serveur": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCh8zoHq9VBQbW5xmdO2wwMAAAAAR-WAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Problèmes de synchronisation/Défaillances locales": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCh8zoHq9VBQbW5xmdO2wwMAAAAAR-SAAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Problèmes de synchronisation": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQCh8zoHq9VBQbW5xmdO2wwMAAAAAR-KAAA=",
+      "total_items": 4320,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    },
+    "Scheduled": {
+      "id": "AAMkADljZGQ1OWFhLTA2NzktNDIwMC1hNjE4LTdmMWViNTc0ZjA4ZAAuAAAAAAA2wn9FvFawTIRJSZdgSIwsAQAmeEUxEvl6S6c2IspdmHEPAAB96Au4AAA=",
+      "total_items": 0,
+      "size_bytes": 0,
+      "last_update": "2025-07-02T18:58:18.203358"
+    }
+  },
+  "rules": {}
+}

@@ -49,4 +49,18 @@ Desktop.ini
 sauvegardes_pj/
 
 # Temporary files
-*_temp.xlsx 
+*_temp.xlsx
+
+# Fichiers de log
+*.log
+
+# Fichiers de configuration sensibles
+.env
+config_clean.json
+
+# Fichiers temporaires
+*.tmp
+*.temp
+
+# OS
+.DS_Store 
