@@ -31,8 +31,8 @@ def get_media_path():
     root.destroy()  # Ferme proprement la fenêtre après utilisation
 
     if file_path and os.path.exists(file_path):
-        return file_path
         print(file_path)
+        return file_path
     return None
 
 
@@ -136,19 +136,8 @@ def summarize_transcriptions(transcriptions):
                 {
                     "role": "system",
                     "content": (
-                        "Tu es un assistant qui met en forme des transcriptions "
-                        "de vidéos ou de réunions."
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": (
-                        "Met en forme cette transcription en français en gardant "
-                        "le maximum d'informations, sous la forme d'un texte "
-                        "structuré, avec des titres et des sous-titres. "
-                        "Organise le contenu de manière claire et logique, "
-                        "en mettant en évidence les points importants et les "
-                        "éventuelles décisions prises.\n\n"
+                        "Tu es un assistant expert qui résume des transcriptions audio/vidéo. "
+                        "Fournis un résumé clair, structuré et concis du contenu suivant.\n\n"
                         f"{full_text}"
                     ),
                 },
@@ -158,6 +147,7 @@ def summarize_transcriptions(transcriptions):
         pbar.set_description("Récupération de la réponse...")
         global_summary = response.choices[0].message.content
         pbar.update(1)
+
 
     # Sauvegarder le résumé global
     with open(
