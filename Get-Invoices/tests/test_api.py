@@ -3,7 +3,9 @@ Tests pour l'API FastAPI.
 """
 import pytest
 from fastapi.testclient import TestClient
-from backend.main import app
+from unittest.mock import patch
+
+from backend.main import app, downloader
 
 
 @pytest.fixture
@@ -48,20 +50,17 @@ def test_check_2fa_endpoint(client: TestClient) -> None:
     assert response.status_code in [200, 503]
 
 
-def test_download_without_downloader(client: TestClient) -> None:
-    """Test que le téléchargement échoue sans downloader initialisé."""
-    from backend.main import downloader
-    # Si le downloader n'est pas initialisé, ça devrait retourner 503
-    if downloader is None:
+def test_download_returns_503_when_downloader_unavailable(client: TestClient) -> None:
+    """Le téléchargement retourne 503 quand le téléchargeur n'est pas disponible."""
+    with patch("backend.main.downloader", None):
         response = client.post("/api/download", json={"max_invoices": 10})
-        assert response.status_code == 503
-        assert "téléchargeur n'est pas initialisé" in response.json()["detail"]
+    assert response.status_code == 503
+    assert "initialisé" in response.json()["detail"].lower()
 
 
-def test_submit_otp_without_downloader(client: TestClient) -> None:
-    """Test que submit OTP échoue sans downloader."""
-    from backend.main import downloader
-    if downloader is None:
+def test_submit_otp_returns_503_when_downloader_unavailable(client: TestClient) -> None:
+    """Submit OTP retourne 503 quand le téléchargeur n'est pas disponible."""
+    with patch("backend.main.downloader", None):
         response = client.post("/api/submit-otp", json={"otp_code": "123456"})
-        assert response.status_code == 503
+    assert response.status_code == 503
 

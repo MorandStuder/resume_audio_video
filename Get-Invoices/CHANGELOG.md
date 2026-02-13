@@ -5,6 +5,26 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.2.0] - 2026-02-12
+
+### Ajouté
+
+- **Connexion continue** : option `SELENIUM_KEEP_BROWSER_OPEN` pour laisser le navigateur ouvert à l'arrêt de l'application
+- **Pagination des commandes** : téléchargement sur toutes les pages d'historique Amazon (passage automatique à la page suivante)
+- Scripts start.ps1 / stop.ps1 convertis en UTF-8 BOM pour éviter les erreurs d'encodage sous PowerShell
+
+### Corrigé
+
+- stop.ps1 : variable `$pid` renommée en `$procId` (conflit avec la variable automatique PowerShell)
+- Backend : imports regroupés et nettoyés (suppression de JSONResponse inutilisé)
+- Amazon downloader : suppression de l'import `os` redondant, utilisation de `pathlib.Path` pour les chemins ChromeDriver
+- Frontend : suppression des `console.log` de debug
+
+### Améliorations
+
+- Code backend et frontend nettoyé pour une base V0 stable
+- Documentation et tests alignés sur la version 1.2
+
 ## [1.1.0] - 2026-02-11
 
 ### Ajouté

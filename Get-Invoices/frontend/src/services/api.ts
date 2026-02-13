@@ -30,22 +30,15 @@ export const downloadInvoices = async (
   year?: number,
   month?: number
 ): Promise<DownloadResponse> => {
-  console.log('API: downloadInvoices appelé', { maxInvoices, year, month, url: `${API_BASE_URL}/api/download` });
-  try {
-    const response = await axios.post<DownloadResponse>(
-      `${API_BASE_URL}/api/download`,
-      {
-        max_invoices: maxInvoices,
-        year: year,
-        month: month,
-      }
-    );
-    console.log('API: Réponse reçue', response.data);
-    return response.data;
-  } catch (error) {
-    console.error('API: Erreur lors de la requête', error);
-    throw error;
-  }
+  const response = await axios.post<DownloadResponse>(
+    `${API_BASE_URL}/api/download`,
+    {
+      max_invoices: maxInvoices,
+      year: year,
+      month: month,
+    }
+  );
+  return response.data;
 };
 
 export const submitOTP = async (otpCode: string): Promise<OTPResponse> => {

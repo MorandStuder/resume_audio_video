@@ -1,23 +1,25 @@
 """
 Point d'entrée principal de l'API FastAPI pour le téléchargement de factures Amazon.
 """
+import logging
+import sys
 from contextlib import asynccontextmanager
+from pathlib import Path
+from typing import AsyncIterator, Optional
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-import logging
-from typing import Optional, AsyncIterator
-from pathlib import Path
+from logging.handlers import RotatingFileHandler
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from backend.services.amazon_downloader import AmazonInvoiceDownloader
 from backend.models.schemas import (
     DownloadRequest,
     DownloadResponse,
-    StatusResponse,
     OTPRequest,
-    OTPResponse
+    OTPResponse,
+    StatusResponse,
 )
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from backend.services.amazon_downloader import AmazonInvoiceDownloader
 
 
 class Settings(BaseSettings):
@@ -75,10 +77,6 @@ class Settings(BaseSettings):
             error_msg = "Erreurs de configuration détectées:\n" + "\n".join(f"  - {err}" for err in errors)
             raise ValueError(error_msg)
 
-
-# Configuration du logging
-import sys
-from logging.handlers import RotatingFileHandler
 
 # Créer le dossier logs s'il n'existe pas
 log_dir = Path("logs")
@@ -142,9 +140,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         )
         logger.info("Téléchargeur Amazon initialisé avec succès")
     except Exception as e:
-        import traceback
         logger.error(f"Erreur lors de l'initialisation du téléchargeur: {str(e)}")
-        logger.error(f"Traceback complet:\n{traceback.format_exc()}")
+        import traceback
+        logger.debug(traceback.format_exc())
         downloader = None
 
     yield
@@ -244,30 +242,18 @@ async def download_invoices(
         import traceback
         error_message = str(e)
         error_traceback = traceback.format_exc()
-        logger.error(f"Erreur lors du téléchargement: {error_message}")
-        logger.error(f"Traceback complet:\n{error_traceback}")
-        
-        # Si un code 2FA est requis, retourner une réponse spéciale
+        logger.error("Erreur lors du téléchargement: %s", error_message)
+        logger.debug("Traceback: %s", error_traceback)
+
         if "Code 2FA requis" in error_message or (downloader and downloader.is_2fa_required()):
             raise HTTPException(
                 status_code=401,
                 detail="Code 2FA requis - utilisez /api/submit-otp pour fournir le code"
             )
-        
-        # Inclure plus de détails dans la réponse pour le debug
-        import sys
-        error_type = type(e).__name__
-        error_details = {
-            "error_type": error_type,
-            "error_message": error_message,
-            "traceback": error_traceback.split('\n')[-5:] if error_traceback else []  # Dernières 5 lignes
-        }
-        
-        logger.error(f"Détails de l'erreur: {error_details}")
-        
+
         raise HTTPException(
             status_code=500,
-            detail=f"Erreur lors du téléchargement: {error_message} (Type: {error_type})"
+            detail=f"Erreur lors du téléchargement: {error_message}"
         )
 
 

@@ -50,7 +50,6 @@ const App: React.FC = () => {
     year?: number,
     month?: number
   ): Promise<void> => {
-    console.log('App: handleDownload appelé', { maxInvoices, year, month });
     setLoading(true);
     setError(null);
     setResult(null);
@@ -58,14 +57,11 @@ const App: React.FC = () => {
     setOtpError(null);
 
     try {
-      console.log('App: Appel à downloadInvoices...');
       const response = await downloadInvoices(maxInvoices, year, month);
-      console.log('App: Réponse reçue', response);
       setResult(response);
       setStatus('Téléchargement terminé');
       setRequiresOTP(false);
     } catch (err: unknown) {
-      console.error('App: Erreur lors du téléchargement', err);
       if (axios.isAxiosError(err) && err.response?.status === 401) {
         // Code 2FA requis
         setRequiresOTP(true);

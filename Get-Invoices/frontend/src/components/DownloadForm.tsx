@@ -27,7 +27,6 @@ const DownloadForm: React.FC<DownloadFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
-    console.log('DownloadForm: handleSubmit appelé', { maxInvoices, year, month });
     onDownload(
       maxInvoices,
       year ? Number(year) : undefined,

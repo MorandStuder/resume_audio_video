@@ -1,7 +1,6 @@
 """
 Service pour télécharger automatiquement les factures Amazon.
 """
-import os
 import time
 import logging
 from typing import Optional, Dict, List, Union, Callable, Awaitable
@@ -132,41 +131,34 @@ class AmazonInvoiceDownloader:
             chrome_options.add_experimental_option("prefs", prefs)
             
             logger.info("Installation/téléchargement de ChromeDriver...")
-            import os
-            # Nettoyer le cache et forcer le téléchargement si nécessaire
             driver_path = ChromeDriverManager().install()
             logger.info(f"Chemin ChromeDriver retourné: {driver_path}")
 
             # Vérifier que c'est bien l'exécutable
-            if not os.path.exists(driver_path) or not driver_path.endswith('.exe'):
-                # ChromeDriverManager retourne parfois le dossier ou un fichier non-exécutable
-                # Construire le chemin direct vers l'exécutable
-                driver_dir = os.path.dirname(driver_path)
+            if not Path(driver_path).exists() or not str(driver_path).endswith('.exe'):
+                driver_dir = Path(driver_path).parent
 
                 # Liste des chemins possibles (ordre de priorité)
+                driver_path_str = str(driver_path)
                 possible_paths = [
-                    # Remplacer THIRD_PARTY_NOTICES par chromedriver.exe
-                    driver_path.replace('THIRD_PARTY_NOTICES.chromedriver', 'chromedriver.exe'),
-                    # Même dossier que le fichier retourné
-                    os.path.join(driver_dir, 'chromedriver.exe'),
-                    # Sous-dossier chromedriver-win32 (structure moderne)
-                    os.path.join(driver_dir, 'chromedriver-win32', 'chromedriver.exe'),
-                    # Dossier parent
-                    os.path.join(os.path.dirname(driver_dir), 'chromedriver.exe'),
+                    driver_path_str.replace('THIRD_PARTY_NOTICES.chromedriver', 'chromedriver.exe'),
+                    str(driver_dir / 'chromedriver.exe'),
+                    str(driver_dir / 'chromedriver-win32' / 'chromedriver.exe'),
+                    str(driver_dir.parent / 'chromedriver.exe'),
                 ]
 
-                # Essayer chaque chemin possible
                 found = False
                 for path in possible_paths:
-                    if os.path.exists(path) and os.path.isfile(path):
+                    p = Path(path)
+                    if p.exists() and p.is_file():
                         # Vérifier que c'est un exécutable (pas un fichier texte)
                         try:
                             with open(path, 'rb') as f:
                                 header = f.read(2)
                                 # Les exécutables Windows commencent par 'MZ'
                                 if header == b'MZ':
-                                    driver_path = path
-                                    logger.info(f"ChromeDriver exécutable trouvé: {driver_path}")
+                                    driver_path = path  # str
+                                    logger.info("ChromeDriver exécutable trouvé: %s", driver_path)
                                     found = True
                                     break
                         except Exception:

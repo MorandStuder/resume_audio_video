@@ -144,6 +144,24 @@ def test_is_2fa_required_no_driver(downloader: AmazonInvoiceDownloader) -> None:
     assert downloader.is_2fa_required() is False
 
 
+def test_has_next_orders_page_no_driver(downloader: AmazonInvoiceDownloader) -> None:
+    """Sans driver, _has_next_orders_page retourne False."""
+    assert downloader._has_next_orders_page() is False
+
+
+def test_go_to_next_orders_page_no_driver(downloader: AmazonInvoiceDownloader) -> None:
+    """Sans driver, _go_to_next_orders_page retourne False."""
+    assert downloader._go_to_next_orders_page() is False
+
+
+def test_has_next_orders_page_with_driver_no_next(downloader: AmazonInvoiceDownloader) -> None:
+    """Avec driver mais sans lien page suivante, retourne False."""
+    mock_driver = Mock()
+    mock_driver.find_elements = Mock(return_value=[])
+    downloader.driver = mock_driver
+    assert downloader._has_next_orders_page() is False
+
+
 def test_is_2fa_required_with_otp_field(downloader: AmazonInvoiceDownloader) -> None:
     """Test de détection 2FA avec champ OTP présent."""
     mock_driver = Mock()

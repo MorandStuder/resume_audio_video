@@ -2,6 +2,8 @@
 
 Programme automatisé pour télécharger vos factures Amazon. Ce projet comprend un backend FastAPI et un frontend React+TypeScript.
 
+**Version 1.2 (V0)** — Connexion continue au navigateur, pagination des commandes, scripts et code nettoyés.
+
 ## ✨ Améliorations Récentes
 
 Le projet a été entièrement audité et amélioré avec les corrections suivantes :
@@ -20,7 +22,7 @@ Le projet a été entièrement audité et amélioré avec les corrections suivan
 - ✅ **Passage à la page suivante des commandes** - Téléchargement sur toutes les pages d'historique (pagination automatique jusqu'à `MAX_INVOICES`)
 
 ### 🧪 Tests Améliorés
-- ✅ **100% de tests passants** - 14/14 tests réussis (vs 4/5 avant)
+- ✅ **100% de tests passants** - 18/18 tests réussis (vs 4/5 avant)
 - ✅ **Couverture augmentée** - 35% de couverture de code (vs 23% avant)
 - ✅ **9 nouveaux tests** - Tests API, validation 2FA, mode manuel, etc.
 

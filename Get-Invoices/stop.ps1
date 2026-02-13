@@ -1,4 +1,4 @@
-﻿# Script PowerShell pour arrêter le backend et le frontend
+# Script PowerShell pour arrêter le backend et le frontend
 # Usage: .\stop.ps1
 
 Write-Host "========================================" -ForegroundColor Cyan
@@ -13,9 +13,9 @@ function Kill-ProcessOnPort {
         $connections = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
         if ($connections) {
             $processes = $connections | Select-Object -ExpandProperty OwningProcess -Unique
-            foreach ($pid in $processes) {
-                Write-Host "→ Arrêt du $Name (PID: $pid)..." -ForegroundColor Yellow
-                Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
+            foreach ($procId in $processes) {
+                Write-Host "→ Arrêt du $Name (PID: $procId)..." -ForegroundColor Yellow
+                Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue
             }
             Write-Host "✓ $Name arrêté" -ForegroundColor Green
         } else {
