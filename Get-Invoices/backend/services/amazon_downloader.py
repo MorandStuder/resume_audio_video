@@ -737,10 +737,10 @@ class AmazonInvoiceDownloader:
             except NoSuchElementException:
                 logger.error("Bouton de connexion non trouvé")
                 raise Exception("Impossible de trouver le bouton de connexion")
-                
-                # Attendre la redirection ou la demande de 2FA
-                time.sleep(5)
-            
+
+            # Attendre la redirection ou la demande de 2FA
+            time.sleep(5)
+
             # Vérifier si un code 2FA est requis
             if self._is_2fa_required():
                 logger.info("Authentification à deux facteurs requise")
