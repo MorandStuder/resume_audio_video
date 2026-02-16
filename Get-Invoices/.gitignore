@@ -45,9 +45,10 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
-# Factures téléchargées
+# Factures téléchargées et registre V1
 factures/
 *.pdf
+.invoice_registry.json
 
 # Logs
 *.log
@@ -57,4 +58,7 @@ logs/
 chromedriver
 geckodriver
 *.crx
+
+# Profil navigateur persistant (cookies/session)
+browser_profile/
 

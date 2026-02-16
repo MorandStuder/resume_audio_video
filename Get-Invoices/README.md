@@ -245,7 +245,8 @@ SELENIUM_TIMEOUT=30
 SELENIUM_BROWSER=chrome
 SELENIUM_MANUAL_MODE=False
 SELENIUM_KEEP_BROWSER_OPEN=False
-FIREFOX_PROFILE_PATH=
+# SELENIUM_CHROME_PROFILE_DIR=./browser_profile
+# FIREFOX_PROFILE_PATH=
 ```
 
 ### Options de configuration
@@ -257,14 +258,27 @@ FIREFOX_PROFILE_PATH=
 - `SELENIUM_KEEP_BROWSER_OPEN` : **Connexion continue** (`True` ou `False`, par défaut `False`)
   - Si `True`, à l'arrêt de l'application le navigateur n'est pas fermé
   - Utile pour garder la session Amazon ouverte ou enchaîner plusieurs lancements
-- `FIREFOX_PROFILE_PATH` : Chemin vers un profil Firefox existant (optionnel)
-  - Permet d'utiliser une session Firefox où vous êtes déjà connecté à Amazon
+- `SELENIUM_CHROME_PROFILE_DIR` : **Profil Chrome persistant** (optionnel, seulement si `SELENIUM_BROWSER=chrome`)
+  - Répertoire où Chrome stocke cookies et session (ex. `./browser_profile`)
+  - Au premier lancement vous vous connectez à Amazon ; aux lancements suivants la connexion est conservée
+- `FIREFOX_PROFILE_PATH` : **Profil Firefox existant** (optionnel, seulement si `SELENIUM_BROWSER=firefox`)
+  - Chemin vers un profil Firefox où vous êtes déjà connecté à Amazon
   - Exemple Windows : `C:\Users\USERNAME\AppData\Roaming\Mozilla\Firefox\Profiles\xxxxxxxx.default`
   - Exemple Linux/Mac : `~/.mozilla/firefox/xxxxxxxx.default`
 
-#### Utilisation avec un profil Firefox existant
+#### Conserver la connexion dans un profil (Chrome ou Firefox)
 
-Si vous utilisez Firefox et que vous êtes déjà connecté à Amazon dans votre navigateur, vous pouvez utiliser votre profil existant :
+**Chrome** — Utiliser un répertoire de profil dédié pour que la session soit sauvegardée entre les lancements :
+
+1. Dans `.env` :
+   ```env
+   SELENIUM_BROWSER=chrome
+   SELENIUM_CHROME_PROFILE_DIR=./browser_profile
+   ```
+2. Au premier lancement, connectez-vous à Amazon (et 2FA si demandé). Les cookies et la session sont enregistrés dans `browser_profile/`.
+3. Aux lancements suivants, la connexion est réutilisée ; vous n'avez en général plus à vous reconnecter.
+
+**Firefox** — Utiliser un profil existant où vous êtes déjà connecté à Amazon :
 
 1. **Trouver le chemin de votre profil Firefox :**
    - Ouvrez Firefox
@@ -277,9 +291,9 @@ Si vous utilisez Firefox et que vous êtes déjà connecté à Amazon dans votre
    FIREFOX_PROFILE_PATH=C:\Users\VotreNom\AppData\Roaming\Mozilla\Firefox\Profiles\xxxxxxxx.default
    ```
 
-3. **Avantages :**
-   - Pas besoin de se reconnecter à Amazon
-   - Utilise vos cookies et sessions existants
+3. **Avantages (Chrome et Firefox) :**
+   - Pas besoin de se reconnecter à chaque lancement (ou moins souvent)
+   - Utilise les cookies et la session du profil
    - Évite les problèmes de 2FA si vous êtes déjà connecté
 
 ⚠️ **Important** :

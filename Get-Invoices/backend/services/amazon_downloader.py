@@ -1,9 +1,11 @@
 """
 Service pour télécharger automatiquement les factures Amazon.
 """
+import re
 import time
 import logging
-from typing import Optional, Dict, List, Union, Callable, Awaitable
+from datetime import datetime, date as date_type
+from typing import Any, Optional, Dict, List, Union, Callable, Awaitable, Tuple
 from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -17,10 +19,19 @@ from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
-from datetime import datetime
 
+from backend.services.invoice_registry import InvoiceRegistry, PROVIDER_AMAZON
 
 logger = logging.getLogger(__name__)
+
+# Mois FR pour le parsing des dates Amazon
+_MOIS_FR = {
+    "janvier": 1, "février": 2, "fevrier": 2, "mars": 3, "avril": 4, "mai": 5,
+    "juin": 6, "juillet": 7, "août": 8, "aout": 8, "septembre": 9,
+    "octobre": 10, "novembre": 11, "décembre": 12, "decembre": 12,
+    "janv": 1, "févr": 2, "fevr": 2, "avr": 4, "juil": 7, "sept": 9,
+    "oct": 10, "nov": 11, "déc": 12, "dec": 12,
+}
 
 
 class AmazonInvoiceDownloader:
@@ -42,7 +53,8 @@ class AmazonInvoiceDownloader:
         otp_callback: Optional[Callable[[], Awaitable[str]]] = None,
         manual_mode: bool = False,
         browser: str = "chrome",  # "chrome" ou "firefox"
-        firefox_profile_path: Optional[str] = None,  # Chemin vers le profil Firefox existant
+        firefox_profile_path: Optional[str] = None,  # Chemin vers le profil Firefox existant (session persistante)
+        chrome_user_data_dir: Optional[str] = None,  # Répertoire de profil Chrome (session persistante)
         keep_browser_open: bool = False,  # Ne pas fermer le navigateur à la fin (connexion continue)
     ) -> None:
         """
@@ -64,6 +76,7 @@ class AmazonInvoiceDownloader:
         self.manual_mode = manual_mode
         self.browser = browser.lower()
         self.firefox_profile_path = firefox_profile_path
+        self.chrome_user_data_dir = chrome_user_data_dir
         self.keep_browser_open = keep_browser_open
         self.driver: Optional[Union[webdriver.Chrome, webdriver.Firefox]] = None
         self.otp_callback = otp_callback
@@ -71,6 +84,7 @@ class AmazonInvoiceDownloader:
         
         # Créer le dossier de téléchargement
         self.download_path.mkdir(parents=True, exist_ok=True)
+        self.registry = InvoiceRegistry(self.download_path)
 
         logger.info(f"AmazonInvoiceDownloader initialisé avec chemin: {self.download_path}")
         logger.info(f"Configuration: browser={self.browser}, headless={self.headless}, manual_mode={self.manual_mode}, timeout={self.timeout}")
@@ -120,6 +134,13 @@ class AmazonInvoiceDownloader:
             chrome_options.add_argument("--remote-debugging-port=9222")  # Pour éviter les crashes
             chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
             chrome_options.add_experimental_option('useAutomationExtension', False)
+
+            # Profil persistant : cookies et session Amazon conservés entre les lancements
+            if self.chrome_user_data_dir:
+                profile_path = Path(self.chrome_user_data_dir).resolve()
+                profile_path.mkdir(parents=True, exist_ok=True)
+                chrome_options.add_argument(f"--user-data-dir={profile_path}")
+                logger.info("Profil Chrome persistant: %s", profile_path)
             
             # Configuration du téléchargement
             prefs = {
@@ -1053,6 +1074,59 @@ class AmazonInvoiceDownloader:
             except Exception as e:
                 logger.warning(f"Impossible de logger le HTML: {e}")
 
+    def _parse_order_date_from_element(self, order_element: Any) -> Optional[date_type]:
+        """
+        Parse la date de commande depuis le bloc commande (ex. "Commandé le 15 janvier 2025").
+        Returns:
+            date ou None si non trouvé
+        """
+        try:
+            text = (order_element.text or "").strip()
+            # FR: "Commandé le 15 janvier 2025", "15 janvier 2025", "15 janv. 2025"
+            for pattern, repl in [
+                (r"(?:Commandé le|Commande du)\s+(\d{1,2})\s+(\w+)\s+(\d{4})", None),
+                (r"(\d{1,2})\s+(\w+)\s+(\d{4})", None),
+            ]:
+                match = re.search(pattern, text, re.IGNORECASE)
+                if match:
+                    day = int(match.group(1))
+                    month_str = match.group(2).lower().rstrip(".")
+                    year = int(match.group(3))
+                    month = _MOIS_FR.get(month_str)
+                    if month and 1 <= day <= 31 and 2020 <= year <= 2030:
+                        return date_type(year, month, day)
+            # EN: "Ordered on Jan 15, 2025", "Jan 15, 2025"
+            en_months = {"jan": 1, "feb": 2, "mar": 3, "apr": 4, "may": 5, "jun": 6,
+                         "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12}
+            match = re.search(r"(?:Ordered on\s+)?(\w{3})\s+(\d{1,2}),?\s+(\d{4})", text, re.IGNORECASE)
+            if match:
+                month = en_months.get(match.group(1).lower())
+                if month:
+                    day = int(match.group(2))
+                    year = int(match.group(3))
+                    if 1 <= day <= 31 and 2020 <= year <= 2030:
+                        return date_type(year, month, day)
+        except Exception as e:
+            logger.debug("Parse date commande: %s", e)
+        return None
+
+    def _get_order_id_from_element(self, order_element: Any, fallback_index: int) -> str:
+        """Retourne l'identifiant de commande (data-order-id ou fallback)."""
+        try:
+            oid = order_element.get_attribute("data-order-id")
+            if oid and oid.strip():
+                return oid.strip()
+        except Exception:
+            pass
+        try:
+            for attr in ("id", "data-order-id"):
+                val = order_element.get_attribute(attr) or ""
+                if "order" in val.lower() and len(val) < 80:
+                    return val
+        except Exception:
+            pass
+        return f"order_{fallback_index}"
+
     def _count_existing_pdfs(self) -> int:
         """Compte les PDFs existants dans le dossier de téléchargement."""
         return len(list(self.download_path.glob("*.pdf")))
@@ -1115,33 +1189,44 @@ class AmazonInvoiceDownloader:
         })
         return session
 
-    def _download_pdf_from_url(self, url: str, order_index: int) -> Optional[str]:
-        """Telecharge un PDF depuis une URL en utilisant les cookies du navigateur."""
+    def _download_pdf_from_url(
+        self,
+        url: str,
+        order_index: int,
+        order_id: str = "",
+        invoice_date: Optional[date_type] = None,
+    ) -> Optional[str]:
+        """Télécharge un PDF depuis une URL. Nom de fichier : amazon_YYYY-MM-DD_orderid.pdf si date dispo."""
         try:
             session = self._get_browser_cookies_session()
-            logger.info(f"  Telechargement HTTP: {url[:100]}...")
+            logger.info("  Telechargement HTTP: %s...", url[:100])
             response = session.get(url, timeout=30, allow_redirects=True)
 
             if response.status_code != 200:
-                logger.warning(f"  HTTP {response.status_code} pour {url[:80]}")
+                logger.warning("  HTTP %s pour %s", response.status_code, url[:80])
                 return None
 
-            content_type = response.headers.get('content-type', '').lower()
-            is_pdf = 'pdf' in content_type or response.content[:4] == b'%PDF'
+            content_type = response.headers.get("content-type", "").lower()
+            is_pdf = "pdf" in content_type or response.content[:4] == b"%PDF"
 
             if not is_pdf:
-                logger.warning(f"  Contenu non-PDF recu: {content_type}")
+                logger.warning("  Contenu non-PDF recu: %s", content_type)
                 return None
 
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"facture_{order_index}_{timestamp}.pdf"
+            if invoice_date:
+                safe_id = re.sub(r"[^\w\-]", "_", order_id or str(order_index))[:40]
+                filename = f"amazon_{invoice_date.isoformat()}_{safe_id}.pdf"
+            else:
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"facture_{order_index}_{timestamp}.pdf"
+
             filepath = self.download_path / filename
             filepath.write_bytes(response.content)
-            logger.info(f"  Facture sauvegardee: {filepath}")
+            logger.info("  Facture sauvegardee: %s", filepath)
             return filename
 
         except Exception as e:
-            logger.error(f"  Erreur telechargement HTTP: {e}")
+            logger.error("  Erreur telechargement HTTP: %s", e)
             return None
 
     def _close_all_popovers(self) -> None:
@@ -1166,25 +1251,33 @@ class AmazonInvoiceDownloader:
         except Exception:
             pass
 
-    async def download_invoice(self, order_element, order_index: int = 0) -> Optional[str]:
+    async def download_invoice(
+        self,
+        order_element: Any,
+        order_index: int = 0,
+        order_id: str = "",
+        invoice_date: Optional[date_type] = None,
+        force_redownload: bool = False,
+    ) -> Optional[str]:
         """
-        Telecharge la facture pour une commande donnee.
-        Flux: cliquer "Facture ▽" -> popover -> recuperer URL -> telecharger via HTTP.
-        Ne navigue PAS hors de la page des commandes.
+        Télécharge la facture pour une commande donnée.
+        Si la facture est déjà dans le registre et que force_redownload est False, skip.
         """
         try:
-            self._log_order_html(order_element, order_index)
-
-            # Fermer tout popover residuel avant de commencer
-            self._close_all_popovers()
-
-            # Etape 1: Trouver et cliquer le dropdown "Facture ▽"
-            trigger = self._find_popover_trigger(order_element)
-            if not trigger:
-                logger.warning(f"Commande #{order_index}: bouton 'Facture' non trouve")
+            oid = order_id or self._get_order_id_from_element(order_element, order_index)
+            if not force_redownload and self.registry.is_downloaded(PROVIDER_AMAZON, oid):
+                logger.info("Commande #%s (%s): deja telechargee, skip", order_index, oid)
                 return None
 
-            logger.info(f"Commande #{order_index}: clic sur le dropdown 'Facture'...")
+            self._log_order_html(order_element, order_index)
+            self._close_all_popovers()
+
+            trigger = self._find_popover_trigger(order_element)
+            if not trigger:
+                logger.warning("Commande #%s: bouton 'Facture' non trouve", order_index)
+                return None
+
+            logger.info("Commande #%s: clic sur le dropdown 'Facture'...", order_index)
             try:
                 self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", trigger)
                 time.sleep(0.5)
@@ -1193,67 +1286,119 @@ class AmazonInvoiceDownloader:
                 self.driver.execute_script("arguments[0].click();", trigger)
             time.sleep(2)
 
-            # Etape 2: Recuperer l'URL du lien "Facture" dans le popover (sans cliquer)
             invoice_url = self._get_invoice_url_from_popover()
-
-            # Fermer le popover
             self._close_all_popovers()
 
             if not invoice_url:
-                logger.warning(f"Commande #{order_index}: URL facture non trouvee dans le popover")
+                logger.warning("Commande #%s: URL facture non trouvee dans le popover", order_index)
                 return None
 
-            # Etape 3: Telecharger le PDF via HTTP (sans quitter la page des commandes)
-            logger.info(f"Commande #{order_index}: telechargement de la facture...")
-            filename = self._download_pdf_from_url(invoice_url, order_index)
+            logger.info("Commande #%s: telechargement de la facture...", order_index)
+            filename = self._download_pdf_from_url(
+                invoice_url, order_index, order_id=oid, invoice_date=invoice_date
+            )
             if filename:
-                logger.info(f"Commande #{order_index}: OK - {filename}")
+                self.registry.add(
+                    PROVIDER_AMAZON,
+                    oid,
+                    filename,
+                    invoice_date=invoice_date.isoformat() if invoice_date else None,
+                )
+                logger.info("Commande #%s: OK - %s", order_index, filename)
             else:
-                logger.warning(f"Commande #{order_index}: echec du telechargement")
+                logger.warning("Commande #%s: echec du telechargement", order_index)
             return filename
 
         except Exception as e:
-            logger.error(f"Commande #{order_index}: erreur: {str(e)}")
+            logger.error("Commande #%s: erreur: %s", order_index, e)
             return None
     
+    def _filter_orders_by_date(
+        self,
+        order_triples: List[Tuple[Any, str, Optional[date_type]]],
+        year: Optional[int] = None,
+        month: Optional[int] = None,
+        months: Optional[List[int]] = None,
+        date_start_str: Optional[str] = None,
+        date_end_str: Optional[str] = None,
+    ) -> List[Tuple[Any, str, Optional[date_type]]]:
+        """
+        Filtre les (order, order_id, date).
+        Priorité : plage (date_start/date_end) > année + liste de mois > année + un mois > année seule.
+        Si filtre actif, exclut les commandes sans date.
+        """
+        # Plage de dates
+        if date_start_str and date_end_str:
+            try:
+                start_d = datetime.strptime(date_start_str, "%Y-%m-%d").date()
+                end_d = datetime.strptime(date_end_str, "%Y-%m-%d").date()
+            except ValueError:
+                logger.warning("Plage invalide date_start=%s date_end=%s, filtre plage ignoré", date_start_str, date_end_str)
+                start_d = end_d = None
+        else:
+            start_d = end_d = None
+
+        if start_d is not None and end_d is not None:
+            out: List[Tuple[Any, str, Optional[date_type]]] = []
+            for order, oid, d in order_triples:
+                if d is None:
+                    continue
+                if start_d <= d <= end_d:
+                    out.append((order, oid, d))
+            return out
+
+        # Année + plusieurs mois
+        if year is not None and months:
+            out = []
+            for order, oid, d in order_triples:
+                if d is None:
+                    continue
+                if d.year == year and d.month in months:
+                    out.append((order, oid, d))
+            return out
+
+        # Année + un mois ou année seule
+        if year is None and month is None:
+            return order_triples
+        out = []
+        for order, oid, d in order_triples:
+            if d is None:
+                continue
+            if year is not None and d.year != year:
+                continue
+            if month is not None and d.month != month:
+                continue
+            out.append((order, oid, d))
+        return out
+
     async def download_invoices(
         self,
         max_invoices: int = 100,
         year: Optional[int] = None,
         month: Optional[int] = None,
-        otp_code: Optional[str] = None
+        months: Optional[List[int]] = None,
+        date_start: Optional[str] = None,
+        date_end: Optional[str] = None,
+        otp_code: Optional[str] = None,
+        force_redownload: bool = False,
     ) -> Dict[str, Union[List[str], int]]:
         """
         Télécharge les factures Amazon.
-        
-        Args:
-            max_invoices: Nombre maximum de factures à télécharger
-            year: Année des factures (optionnel)
-            month: Mois des factures (optionnel)
-            otp_code: Code OTP pour la 2FA (optionnel)
-        
-        Returns:
-            Dictionnaire avec le nombre de factures téléchargées et la liste des fichiers
+        Filtre par plage (date_start/date_end), ou année + mois (months), ou year/month.
+        Ne retélécharge pas les factures déjà enregistrées sauf force_redownload.
         """
         try:
-            # Connexion avec le code OTP si fourni
             login_result = await self.login(otp_code=otp_code)
             if not login_result:
-                # Vérifier si c'est parce qu'un code 2FA est requis
                 if self._is_2fa_required():
                     raise Exception("Code 2FA requis - veuillez fournir le code OTP")
-                else:
-                    raise Exception("Échec de la connexion à Amazon")
-            
-            # Navigation vers les commandes
+                raise Exception("Échec de la connexion à Amazon")
+
             if not await self.navigate_to_orders():
                 raise Exception("Impossible d'accéder à la page des commandes")
 
-            # Récupérer les commandes avec plusieurs sélecteurs possibles
             logger.info("Recherche des commandes sur la page...")
             wait = WebDriverWait(self.driver, self.timeout)
-
-            # Essayer différents sélecteurs Amazon
             order_selectors = [
                 "[data-order-id]",
                 ".order-card",
@@ -1266,55 +1411,55 @@ class AmazonInvoiceDownloader:
             orders = None
             for selector in order_selectors:
                 try:
-                    logger.info(f"Tentative avec selecteur: {selector}")
                     orders = self.driver.find_elements(By.CSS_SELECTOR, selector)
                     if orders and len(orders) > 0:
-                        logger.info(f"Commandes trouvees avec selecteur: {selector}")
+                        logger.info("Commandes trouvees avec selecteur: %s", selector)
                         break
-                    else:
-                        logger.info(f"Aucune commande avec selecteur: {selector}")
                 except Exception as e:
-                    logger.warning(f"Erreur avec selecteur {selector}: {str(e)}")
+                    logger.warning("Erreur avec selecteur %s: %s", selector, e)
                     continue
 
             if not orders or len(orders) == 0:
-                # Log pour déboguer
-                logger.error("Aucune commande trouvee avec les selecteurs standards")
-                logger.error(f"URL actuelle: {self.driver.current_url}")
-                logger.error(f"Titre de la page: {self.driver.title}")
-
-                # Essayer de trouver n'importe quel élément qui pourrait être une commande
-                logger.info("Recherche d'elements contenant 'order' dans leur classe ou id...")
-                all_divs = self.driver.find_elements(By.TAG_NAME, "div")
-                potential_orders = []
-                for div in all_divs[:100]:  # Limiter à 100 pour éviter trop de logs
-                    class_name = div.get_attribute("class") or ""
-                    div_id = div.get_attribute("id") or ""
-                    if "order" in class_name.lower() or "order" in div_id.lower():
-                        potential_orders.append(f"class={class_name}, id={div_id}")
-
-                if potential_orders:
-                    logger.info(f"Elements potentiels trouves: {potential_orders[:10]}")
-                else:
-                    logger.error("Aucun element avec 'order' trouve")
-
+                logger.error("Aucune commande trouvee. URL: %s", self.driver.current_url)
                 raise Exception("Impossible de trouver les commandes sur la page")
 
-            logger.info(f"{len(orders)} commande(s) trouvee(s) sur cette page")
-            
             downloaded_files: List[str] = []
             count = 0
             global_order_index = 0
             page_num = 1
 
             while True:
-                # Traiter les commandes de la page courante (sans dépasser max_invoices)
-                to_process = min(len(orders), max_invoices - count)
-                for i in range(to_process):
+                # Construire (order, order_id, date) pour chaque commande de la page
+                order_triples: List[Tuple[Any, str, Optional[date_type]]] = []
+                for i, order in enumerate(orders):
+                    oid = self._get_order_id_from_element(order, global_order_index + i)
+                    inv_date = self._parse_order_date_from_element(order)
+                    order_triples.append((order, oid, inv_date))
+
+                filtered = self._filter_orders_by_date(
+                    order_triples,
+                    year=year,
+                    month=month,
+                    months=months,
+                    date_start_str=date_start,
+                    date_end_str=date_end,
+                )
+                if any([date_start, date_end, year is not None, month is not None, months]):
+                    logger.info(
+                        "Filtre date (year=%s month=%s months=%s plage=%s..%s): %s -> %s commandes",
+                        year, month, months, date_start, date_end, len(order_triples), len(filtered)
+                    )
+
+                to_process = min(len(filtered), max_invoices - count)
+                for j in range(to_process):
+                    order, oid, inv_date = filtered[j]
                     try:
-                        order = orders[i]
                         file_name = await self.download_invoice(
-                            order, order_index=global_order_index
+                            order,
+                            order_index=global_order_index,
+                            order_id=oid,
+                            invoice_date=inv_date,
+                            force_redownload=force_redownload,
                         )
                         if file_name:
                             downloaded_files.append(file_name)
@@ -1322,15 +1467,14 @@ class AmazonInvoiceDownloader:
                         global_order_index += 1
                         time.sleep(1)
                     except Exception as e:
-                        logger.warning(f"Erreur pour une commande: {str(e)}")
+                        logger.warning("Erreur pour une commande: %s", e)
                         global_order_index += 1
                         continue
 
                 if count >= max_invoices:
-                    logger.info(f"Limite de {max_invoices} facture(s) atteinte")
+                    logger.info("Limite de %s facture(s) atteinte", max_invoices)
                     break
 
-                # Page suivante si disponible
                 if not self._has_next_orders_page():
                     logger.info("Pas de page suivante - fin du téléchargement")
                     break
@@ -1339,8 +1483,7 @@ class AmazonInvoiceDownloader:
                     break
 
                 page_num += 1
-                logger.info(f"Récupération des commandes - page {page_num}...")
-                wait = WebDriverWait(self.driver, self.timeout)
+                logger.info("Récupération des commandes - page %s...", page_num)
                 orders = None
                 for selector in order_selectors:
                     try:
@@ -1352,17 +1495,13 @@ class AmazonInvoiceDownloader:
                 if not orders or len(orders) == 0:
                     logger.info("Aucune commande sur la page suivante")
                     break
-                logger.info(f"{len(orders)} commande(s) sur la page {page_num}")
+                logger.info("%s commande(s) sur la page %s", len(orders), page_num)
 
-            logger.info(f"Téléchargement terminé: {count} facture(s) téléchargée(s)")
-            
-            return {
-                "count": count,
-                "files": downloaded_files
-            }
-        
+            logger.info("Téléchargement terminé: %s facture(s) téléchargée(s)", count)
+            return {"count": count, "files": downloaded_files}
+
         except Exception as e:
-            logger.error(f"Erreur lors du téléchargement des factures: {str(e)}")
+            logger.error("Erreur lors du téléchargement des factures: %s", e)
             raise
     
     async def close(self) -> None:

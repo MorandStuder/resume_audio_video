@@ -2,7 +2,7 @@
 Schémas Pydantic pour les requêtes et réponses de l'API.
 """
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Annotated, List, Optional
 
 
 class DownloadRequest(BaseModel):
@@ -23,7 +23,23 @@ class DownloadRequest(BaseModel):
         default=None,
         ge=1,
         le=12,
-        description="Mois des factures à télécharger"
+        description="Mois des factures à télécharger (un seul, si months non fourni)"
+    )
+    months: Optional[List[Annotated[int, Field(ge=1, le=12)]]] = Field(
+        default=None,
+        description="Plusieurs mois (1-12) pour l'année donnée ; prioritaire sur month si fourni"
+    )
+    date_start: Optional[str] = Field(
+        default=None,
+        description="Début de plage au format YYYY-MM-DD (prioritaire sur year/month si avec date_end)"
+    )
+    date_end: Optional[str] = Field(
+        default=None,
+        description="Fin de plage au format YYYY-MM-DD"
+    )
+    force_redownload: Optional[bool] = Field(
+        default=False,
+        description="Si True, retélécharge les factures déjà présentes dans le registre"
     )
 
     class Config:
@@ -31,7 +47,8 @@ class DownloadRequest(BaseModel):
             "example": {
                 "max_invoices": 50,
                 "year": 2024,
-                "month": 1
+                "month": 1,
+                "force_redownload": False
             }
         }
 

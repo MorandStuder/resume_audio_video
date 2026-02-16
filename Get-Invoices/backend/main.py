@@ -32,7 +32,8 @@ class Settings(BaseSettings):
     selenium_timeout: int = 30
     selenium_manual_mode: bool = False  # Mode manuel : laisse le navigateur ouvert pour saisie manuelle
     selenium_browser: str = "chrome"  # "chrome" ou "firefox"
-    firefox_profile_path: Optional[str] = None  # Chemin vers le profil Firefox existant (ex: C:\Users\USERNAME\AppData\Roaming\Mozilla\Firefox\Profiles\PROFILENAME)
+    firefox_profile_path: Optional[str] = None  # Chemin vers le profil Firefox existant (session persistante)
+    selenium_chrome_profile_dir: Optional[str] = None  # Répertoire de profil Chrome (session persistante, ex: ./browser_profile)
     selenium_keep_browser_open: bool = False  # Connexion continue : ne pas fermer le navigateur à l'arrêt de l'app
 
     model_config = SettingsConfigDict(
@@ -66,11 +67,15 @@ class Settings(BaseSettings):
         if self.max_invoices <= 0:
             errors.append(f"MAX_INVOICES doit être positif, pas {self.max_invoices}")
 
-        # Avertir si Firefox profile est défini mais browser n'est pas firefox
         if self.firefox_profile_path and self.selenium_browser != "firefox":
             errors.append(
                 f"FIREFOX_PROFILE_PATH est défini mais SELENIUM_BROWSER='{self.selenium_browser}'. "
                 "Le profil Firefox sera ignoré."
+            )
+        if self.selenium_chrome_profile_dir and self.selenium_browser != "chrome":
+            errors.append(
+                f"SELENIUM_CHROME_PROFILE_DIR est défini mais SELENIUM_BROWSER='{self.selenium_browser}'. "
+                "Le profil Chrome sera ignoré."
             )
 
         if errors:
@@ -136,6 +141,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             manual_mode=settings.selenium_manual_mode,
             browser=settings.selenium_browser,
             firefox_profile_path=settings.firefox_profile_path,
+            chrome_user_data_dir=settings.selenium_chrome_profile_dir,
             keep_browser_open=settings.selenium_keep_browser_open,
         )
         logger.info("Téléchargeur Amazon initialisé avec succès")
@@ -222,13 +228,20 @@ async def download_invoices(
         )
     
     try:
-        logger.info(f"Démarrage du téléchargement avec paramètres: max_invoices={request.max_invoices} year={request.year} month={request.month}, otp_code: {'fourni' if otp_code else 'non fourni'}")
-        
+        logger.info(
+            "Démarrage du téléchargement: max_invoices=%s year=%s month=%s months=%s date_start=%s date_end=%s force_redownload=%s otp=%s",
+            request.max_invoices, request.year, request.month, request.months,
+            request.date_start, request.date_end, request.force_redownload, "fourni" if otp_code else "non fourni"
+        )
         result = await downloader.download_invoices(
             max_invoices=request.max_invoices or settings.max_invoices,
             year=request.year,
             month=request.month,
-            otp_code=otp_code
+            months=request.months,
+            date_start=request.date_start,
+            date_end=request.date_end,
+            otp_code=otp_code,
+            force_redownload=request.force_redownload or False,
         )
         
         return DownloadResponse(

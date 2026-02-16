@@ -5,6 +5,21 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.3.0] - 2026-02-12 — V1 Plan d'amélioration
+
+### Ajouté
+
+- **Filtre par date** : les paramètres `year` et `month` filtrent désormais les commandes (parsing de la date "Commandé le …" sur chaque bloc). Les commandes sans date sont ignorées lorsque le filtre est actif.
+- **Date dans le nom de fichier** : les factures sont enregistrées au format `amazon_YYYY-MM-DD_<order_id>.pdf` lorsque la date de commande est détectée, sinon `facture_<index>_<timestamp>.pdf`.
+- **Registre des factures** : fichier `.invoice_registry.json` dans le dossier de téléchargement pour lister les factures déjà téléchargées (provider, order_id, date, chemin).
+- **Téléchargement incrémental** : les factures déjà présentes dans le registre (et dont le fichier existe) sont ignorées sauf si `force_redownload=true`.
+- **API** : paramètre `force_redownload` dans la requête de téléchargement pour forcer un nouveau téléchargement.
+
+### Technique
+
+- Nouveau module `backend.services.invoice_registry.InvoiceRegistry` (chargement/sauvegarde JSON).
+- Méthodes `_parse_order_date_from_element`, `_get_order_id_from_element`, `_filter_orders_by_date` dans le downloader Amazon.
+
 ## [1.2.0] - 2026-02-12
 
 ### Ajouté

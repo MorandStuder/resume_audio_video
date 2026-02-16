@@ -25,18 +25,31 @@ export const getStatus = async (): Promise<StatusResponse> => {
   return response.data;
 };
 
+export interface DownloadParams {
+  max_invoices: number;
+  year?: number;
+  month?: number;
+  months?: number[];
+  date_start?: string;
+  date_end?: string;
+  force_redownload?: boolean;
+}
+
 export const downloadInvoices = async (
-  maxInvoices: number,
-  year?: number,
-  month?: number
+  params: DownloadParams
 ): Promise<DownloadResponse> => {
+  const body: Record<string, unknown> = {
+    max_invoices: params.max_invoices,
+    force_redownload: params.force_redownload ?? false,
+  };
+  if (params.year != null) body.year = params.year;
+  if (params.month != null) body.month = params.month;
+  if (params.months != null && params.months.length > 0) body.months = params.months;
+  if (params.date_start) body.date_start = params.date_start;
+  if (params.date_end) body.date_end = params.date_end;
   const response = await axios.post<DownloadResponse>(
     `${API_BASE_URL}/api/download`,
-    {
-      max_invoices: maxInvoices,
-      year: year,
-      month: month,
-    }
+    body
   );
   return response.data;
 };

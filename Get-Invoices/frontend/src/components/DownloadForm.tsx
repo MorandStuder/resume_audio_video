@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import './DownloadForm.css';
+import type { DownloadParams } from '../services/api';
 
 interface DownloadResult {
   success: boolean;
@@ -9,11 +10,28 @@ interface DownloadResult {
 }
 
 interface DownloadFormProps {
-  onDownload: (maxInvoices: number, year?: number, month?: number) => void;
+  onDownload: (params: DownloadParams) => void;
   loading: boolean;
   result: DownloadResult | null;
   error: string | null;
 }
+
+const MONTHS = [
+  { value: 1, label: 'Janvier' },
+  { value: 2, label: 'Février' },
+  { value: 3, label: 'Mars' },
+  { value: 4, label: 'Avril' },
+  { value: 5, label: 'Mai' },
+  { value: 6, label: 'Juin' },
+  { value: 7, label: 'Juillet' },
+  { value: 8, label: 'Août' },
+  { value: 9, label: 'Septembre' },
+  { value: 10, label: 'Octobre' },
+  { value: 11, label: 'Novembre' },
+  { value: 12, label: 'Décembre' },
+];
+
+type FilterType = 'none' | 'year' | 'months' | 'range';
 
 const DownloadForm: React.FC<DownloadFormProps> = ({
   onDownload,
@@ -22,19 +40,43 @@ const DownloadForm: React.FC<DownloadFormProps> = ({
   error,
 }) => {
   const [maxInvoices, setMaxInvoices] = useState<number>(100);
+  const [filterType, setFilterType] = useState<FilterType>('none');
   const [year, setYear] = useState<number | ''>(new Date().getFullYear());
-  const [month, setMonth] = useState<number | ''>('');
+  const [selectedMonths, setSelectedMonths] = useState<number[]>([]);
+  const [dateStart, setDateStart] = useState<string>('');
+  const [dateEnd, setDateEnd] = useState<string>('');
+  const [forceRedownload, setForceRedownload] = useState<boolean>(false);
+
+  const toggleMonth = useCallback((m: number): void => {
+    setSelectedMonths((prev) =>
+      prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m].sort((a, b) => a - b)
+    );
+  }, []);
 
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
-    onDownload(
-      maxInvoices,
-      year ? Number(year) : undefined,
-      month ? Number(month) : undefined
-    );
+    const params: DownloadParams = {
+      max_invoices: maxInvoices,
+      force_redownload: forceRedownload,
+    };
+    if (filterType === 'year' && year) {
+      params.year = Number(year);
+    }
+    if (filterType === 'months' && year && selectedMonths.length > 0) {
+      params.year = Number(year);
+      params.months = selectedMonths.slice();
+    }
+    if (filterType === 'range' && dateStart && dateEnd) {
+      params.date_start = dateStart;
+      params.date_end = dateEnd;
+    }
+    onDownload(params);
   };
 
   const currentYear = new Date().getFullYear();
+  const canSubmitRange = filterType !== 'range' || (dateStart && dateEnd);
+  const canSubmitMonths = filterType !== 'months' || (year && selectedMonths.length > 0);
+  const canSubmit = canSubmitRange && canSubmitMonths;
 
   return (
     <form onSubmit={handleSubmit} className="download-form">
@@ -53,9 +95,22 @@ const DownloadForm: React.FC<DownloadFormProps> = ({
         />
       </div>
 
-      <div className="form-row">
+      <div className="form-group">
+        <label>Filtrer par période</label>
+        <select
+          value={filterType}
+          onChange={(e): void => setFilterType(e.target.value as FilterType)}
+        >
+          <option value="none">Toutes les commandes</option>
+          <option value="year">Une année</option>
+          <option value="months">Année + un ou plusieurs mois</option>
+          <option value="range">Plage de dates</option>
+        </select>
+      </div>
+
+      {filterType === 'year' && (
         <div className="form-group">
-          <label htmlFor="year">Année (optionnel)</label>
+          <label htmlFor="year">Année</label>
           <input
             id="year"
             type="number"
@@ -65,35 +120,77 @@ const DownloadForm: React.FC<DownloadFormProps> = ({
             onChange={(e): void => setYear(e.target.value ? Number(e.target.value) : '')}
           />
         </div>
+      )}
 
-        <div className="form-group">
-          <label htmlFor="month">Mois (optionnel)</label>
-          <select
-            id="month"
-            value={month}
-            onChange={(e): void => setMonth(e.target.value ? Number(e.target.value) : '')}
-          >
-            <option value="">Tous les mois</option>
-            <option value="1">Janvier</option>
-            <option value="2">Février</option>
-            <option value="3">Mars</option>
-            <option value="4">Avril</option>
-            <option value="5">Mai</option>
-            <option value="6">Juin</option>
-            <option value="7">Juillet</option>
-            <option value="8">Août</option>
-            <option value="9">Septembre</option>
-            <option value="10">Octobre</option>
-            <option value="11">Novembre</option>
-            <option value="12">Décembre</option>
-          </select>
+      {filterType === 'months' && (
+        <>
+          <div className="form-group">
+            <label htmlFor="yearMonths">Année</label>
+            <input
+              id="yearMonths"
+              type="number"
+              min="2020"
+              max={currentYear}
+              value={year}
+              onChange={(e): void => setYear(e.target.value ? Number(e.target.value) : '')}
+            />
+          </div>
+          <div className="form-group">
+            <span className="label-inline">Mois (plusieurs possibles)</span>
+            <div className="months-checkboxes">
+              {MONTHS.map(({ value, label }) => (
+                <label key={value} className="month-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={selectedMonths.includes(value)}
+                    onChange={(): void => toggleMonth(value)}
+                  />
+                  <span>{label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {filterType === 'range' && (
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="dateStart">Du</label>
+            <input
+              id="dateStart"
+              type="date"
+              value={dateStart}
+              onChange={(e): void => setDateStart(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="dateEnd">Au</label>
+            <input
+              id="dateEnd"
+              type="date"
+              value={dateEnd}
+              onChange={(e): void => setDateEnd(e.target.value)}
+            />
+          </div>
         </div>
+      )}
+
+      <div className="form-group form-group-checkbox">
+        <label className="checkbox-label">
+          <input
+            type="checkbox"
+            checked={forceRedownload}
+            onChange={(e): void => setForceRedownload(e.target.checked)}
+          />
+          <span>Forcer le re-téléchargement (ignorer le registre)</span>
+        </label>
       </div>
 
       <button
         type="submit"
         className="download-button"
-        disabled={loading}
+        disabled={loading || !canSubmit}
       >
         {loading ? 'Téléchargement en cours...' : 'Télécharger les factures'}
       </button>
@@ -125,4 +222,3 @@ const DownloadForm: React.FC<DownloadFormProps> = ({
 };
 
 export default DownloadForm;
-

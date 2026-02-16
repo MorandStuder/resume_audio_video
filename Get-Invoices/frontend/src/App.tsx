@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import DownloadForm from './components/DownloadForm';
 import StatusDisplay from './components/StatusDisplay';
-import { downloadInvoices, getStatus, submitOTP } from './services/api';
+import { downloadInvoices, getStatus, submitOTP, type DownloadParams } from './services/api';
 import axios from 'axios';
 
 interface DownloadResult {
@@ -20,11 +20,7 @@ const App: React.FC = () => {
   const [requiresOTP, setRequiresOTP] = useState<boolean>(false);
   const [otpCode, setOtpCode] = useState<string>('');
   const [otpError, setOtpError] = useState<string | null>(null);
-  const [pendingDownload, setPendingDownload] = useState<{
-    maxInvoices: number;
-    year?: number;
-    month?: number;
-  } | null>(null);
+  const [pendingDownload, setPendingDownload] = useState<DownloadParams | null>(null);
 
   React.useEffect(() => {
     checkStatus();
@@ -45,11 +41,7 @@ const App: React.FC = () => {
     }
   };
 
-  const handleDownload = async (
-    maxInvoices: number,
-    year?: number,
-    month?: number
-  ): Promise<void> => {
+  const handleDownload = async (params: DownloadParams): Promise<void> => {
     setLoading(true);
     setError(null);
     setResult(null);
@@ -57,15 +49,14 @@ const App: React.FC = () => {
     setOtpError(null);
 
     try {
-      const response = await downloadInvoices(maxInvoices, year, month);
+      const response = await downloadInvoices(params);
       setResult(response);
       setStatus('Téléchargement terminé');
       setRequiresOTP(false);
     } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        // Code 2FA requis
         setRequiresOTP(true);
-        setPendingDownload({ maxInvoices, year, month });
+        setPendingDownload(params);
         setError('Code 2FA requis. Veuillez saisir le code reçu par SMS, email ou application.');
         setStatus('Code 2FA requis');
       } else {
@@ -96,13 +87,8 @@ const App: React.FC = () => {
         setStatus('Code OTP accepté');
         setOtpCode('');
         
-        // Retenter le téléchargement si on en avait un en attente
         if (pendingDownload) {
-          await handleDownload(
-            pendingDownload.maxInvoices,
-            pendingDownload.year,
-            pendingDownload.month
-          );
+          await handleDownload(pendingDownload);
           setPendingDownload(null);
         }
       } else {
