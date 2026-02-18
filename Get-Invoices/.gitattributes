@@ -1,2 +1,0 @@
-# Fins de ligne : .env* toujours en LF (évite l'avertissement Git sur Windows)
-.env* text eol=lf
