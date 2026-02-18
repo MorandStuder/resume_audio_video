@@ -111,6 +111,11 @@ Ces scripts vont :
 - ✅ Ouvrir le navigateur sur http://localhost:3000
 - ✅ Afficher les logs en temps réel
 
+**Mode de lancement (Windows)** — Configurable dans `.env` avec `START_SINGLE_WINDOW` :
+- `START_SINGLE_WINDOW=true` (défaut dans .env.example) : tout dans le **terminal courant** (idéal dans Cursor : backend en arrière-plan, frontend au premier plan ; Ctrl+C arrête tout).
+- `START_SINGLE_WINDOW=false` : backend et frontend dans **deux fenêtres PowerShell** séparées.
+- En ligne de commande : `.\start.ps1 -SingleWindow` force le mode une fenêtre ; `.\start.ps1 -SingleWindow:$false` force les 3 fenêtres.
+
 **Pour arrêter l'application :**
 
 **Windows :**
@@ -247,10 +252,13 @@ SELENIUM_MANUAL_MODE=False
 SELENIUM_KEEP_BROWSER_OPEN=False
 # SELENIUM_CHROME_PROFILE_DIR=./browser_profile
 # FIREFOX_PROFILE_PATH=
+START_SINGLE_WINDOW=true
 ```
 
 ### Options de configuration
 
+- **Période des commandes Amazon** : la période affichée sur Amazon (liste déroulante « Vos commandes ») est dérivée du filtre choisi dans l’interface (année, plage de dates). Pour une plage 2025–2026, le script sélectionne « en 2026 » puis « en 2025 » et agrège les factures.
+- `START_SINGLE_WINDOW` : **Lancement dans le terminal courant** (Windows, `start.ps1` uniquement). `true` = tout dans le même terminal (idéal Cursor), `false` = backend et frontend dans des fenêtres séparées. Défaut dans .env.example : `true`.
 - `SELENIUM_BROWSER` : Navigateur à utiliser (`chrome` ou `firefox`, par défaut `chrome`)
 - `SELENIUM_MANUAL_MODE` : Mode manuel (`True` ou `False`, par défaut `False`)
   - Si `True`, le navigateur reste ouvert et vous pouvez entrer vos identifiants manuellement
@@ -358,7 +366,8 @@ notepad .env
 ### Commandes Utiles
 | Commande | Description |
 |----------|-------------|
-| `.\start.ps1` | Démarrer backend + frontend (Windows) |
+| `.\start.ps1` | Démarrer backend + frontend (Windows ; mode selon `START_SINGLE_WINDOW` dans .env) |
+| `.\start.ps1 -SingleWindow` | Forcer tout dans le terminal courant (Windows) |
 | `.\stop.ps1` | Arrêter l'application (Windows) |
 | `./start.sh` | Démarrer backend + frontend (Linux/Mac) |
 | `./stop.sh` | Arrêter l'application (Linux/Mac) |

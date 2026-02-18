@@ -9,7 +9,7 @@ from typing import Any, Optional, Dict, List, Union, Callable, Awaitable, Tuple
 from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -988,6 +988,83 @@ class AmazonInvoiceDownloader:
             logger.warning(f"Impossible de passer à la page suivante: {e}")
             return False
 
+    def _get_amazon_periods_for_request(
+        self,
+        year: Optional[int] = None,
+        month: Optional[int] = None,
+        months: Optional[List[int]] = None,
+        date_start: Optional[str] = None,
+        date_end: Optional[str] = None,
+    ) -> List[str]:
+        """
+        Détermine les libellés de période Amazon à sélectionner à partir du filtre de l'interface.
+        Retourne la plus petite (ou les plus petites) périodes couvrant la demande.
+        Ex. plage 2025-2026 → ["en 2026", "en 2025"] ; année 2025 → ["en 2025"] ; pas de filtre → ["les 3 derniers mois"].
+        """
+        if date_start and date_end:
+            try:
+                start_d = datetime.strptime(date_start, "%Y-%m-%d").date()
+                end_d = datetime.strptime(date_end, "%Y-%m-%d").date()
+                years_set = set(range(start_d.year, end_d.year + 1))
+                years_desc = sorted(years_set, reverse=True)
+                return [f"en {y}" for y in years_desc]
+            except ValueError:
+                pass
+        if year is not None:
+            return [f"en {year}"]
+        return ["les 3 derniers mois"]
+
+    def _select_orders_period(self, option_text: str) -> bool:
+        """
+        Sélectionne la période des commandes dans la liste déroulante Amazon.
+        option_text: libellé exact (ex. "en 2025", "les 3 derniers mois").
+        Returns:
+            True si la sélection a réussi ou filtre non trouvé (on continue), False en cas d'erreur bloquante.
+        """
+        if not option_text:
+            return True
+        try:
+            if not self.driver:
+                return False
+            select_elem = None
+            for by, selector in [
+                (By.ID, "orderFilter"),
+                (By.CSS_SELECTOR, "select[name='orderFilter']"),
+                (By.CSS_SELECTOR, "select#orderFilter"),
+                (By.XPATH, "//select[contains(@name,'order') or contains(@id,'order') or contains(@id,'filter')]"),
+                (By.CSS_SELECTOR, "#ordersContainer select, .order-history select, select.a-native-dropdown"),
+            ]:
+                try:
+                    elems = self.driver.find_elements(by, selector)
+                    for el in elems:
+                        if el.is_displayed():
+                            select_elem = el
+                            break
+                    if select_elem:
+                        break
+                except NoSuchElementException:
+                    continue
+            if not select_elem:
+                logger.warning("Liste déroulante période des commandes non trouvée; poursuite sans filtre.")
+                return True
+            sel = Select(select_elem)
+            try:
+                sel.select_by_visible_text(option_text)
+                logger.info("Période des commandes sélectionnée: %s", option_text)
+                time.sleep(3)
+                return True
+            except Exception:
+                for opt in sel.options:
+                    if option_text in (opt.text or "").strip():
+                        opt.click()
+                        logger.info("Période des commandes sélectionnée (option): %s", option_text)
+                        time.sleep(3)
+                        return True
+                raise
+        except Exception as e:
+            logger.warning("Impossible de sélectionner la période des commandes: %s", e)
+            return True
+
     async def navigate_to_orders(self) -> bool:
         """
         Navigue vers la page des commandes.
@@ -1056,6 +1133,7 @@ class AmazonInvoiceDownloader:
                 EC.presence_of_element_located((By.ID, "ordersContainer"))
             )
             logger.info("Page des commandes chargee")
+            time.sleep(2)
             return True
 
         except Exception as e:
@@ -1397,8 +1475,12 @@ class AmazonInvoiceDownloader:
             if not await self.navigate_to_orders():
                 raise Exception("Impossible d'accéder à la page des commandes")
 
-            logger.info("Recherche des commandes sur la page...")
-            wait = WebDriverWait(self.driver, self.timeout)
+            periods = self._get_amazon_periods_for_request(
+                year=year, month=month, months=months,
+                date_start=date_start, date_end=date_end,
+            )
+            logger.info("Période(s) Amazon à traiter (depuis le filtre interface): %s", periods)
+
             order_selectors = [
                 "[data-order-id]",
                 ".order-card",
@@ -1407,95 +1489,100 @@ class AmazonInvoiceDownloader:
                 "div[id^='order-']",
                 ".order-info",
             ]
-
-            orders = None
-            for selector in order_selectors:
-                try:
-                    orders = self.driver.find_elements(By.CSS_SELECTOR, selector)
-                    if orders and len(orders) > 0:
-                        logger.info("Commandes trouvees avec selecteur: %s", selector)
-                        break
-                except Exception as e:
-                    logger.warning("Erreur avec selecteur %s: %s", selector, e)
-                    continue
-
-            if not orders or len(orders) == 0:
-                logger.error("Aucune commande trouvee. URL: %s", self.driver.current_url)
-                raise Exception("Impossible de trouver les commandes sur la page")
-
             downloaded_files: List[str] = []
             count = 0
             global_order_index = 0
-            page_num = 1
 
-            while True:
-                # Construire (order, order_id, date) pour chaque commande de la page
-                order_triples: List[Tuple[Any, str, Optional[date_type]]] = []
-                for i, order in enumerate(orders):
-                    oid = self._get_order_id_from_element(order, global_order_index + i)
-                    inv_date = self._parse_order_date_from_element(order)
-                    order_triples.append((order, oid, inv_date))
-
-                filtered = self._filter_orders_by_date(
-                    order_triples,
-                    year=year,
-                    month=month,
-                    months=months,
-                    date_start_str=date_start,
-                    date_end_str=date_end,
-                )
-                if any([date_start, date_end, year is not None, month is not None, months]):
-                    logger.info(
-                        "Filtre date (year=%s month=%s months=%s plage=%s..%s): %s -> %s commandes",
-                        year, month, months, date_start, date_end, len(order_triples), len(filtered)
-                    )
-
-                to_process = min(len(filtered), max_invoices - count)
-                for j in range(to_process):
-                    order, oid, inv_date = filtered[j]
-                    try:
-                        file_name = await self.download_invoice(
-                            order,
-                            order_index=global_order_index,
-                            order_id=oid,
-                            invoice_date=inv_date,
-                            force_redownload=force_redownload,
-                        )
-                        if file_name:
-                            downloaded_files.append(file_name)
-                            count += 1
-                        global_order_index += 1
-                        time.sleep(1)
-                    except Exception as e:
-                        logger.warning("Erreur pour une commande: %s", e)
-                        global_order_index += 1
-                        continue
-
+            for period_option in periods:
                 if count >= max_invoices:
-                    logger.info("Limite de %s facture(s) atteinte", max_invoices)
                     break
+                self._select_orders_period(period_option)
+                time.sleep(3)
 
-                if not self._has_next_orders_page():
-                    logger.info("Pas de page suivante - fin du téléchargement")
-                    break
-                if not self._go_to_next_orders_page():
-                    logger.warning("Impossible d'aller à la page suivante")
-                    break
-
-                page_num += 1
-                logger.info("Récupération des commandes - page %s...", page_num)
+                logger.info("Recherche des commandes sur la page (période: %s)...", period_option)
                 orders = None
                 for selector in order_selectors:
                     try:
                         orders = self.driver.find_elements(By.CSS_SELECTOR, selector)
                         if orders and len(orders) > 0:
+                            logger.info("Commandes trouvees avec selecteur: %s", selector)
                             break
-                    except Exception:
+                    except Exception as e:
+                        logger.warning("Erreur avec selecteur %s: %s", selector, e)
                         continue
+
                 if not orders or len(orders) == 0:
-                    logger.info("Aucune commande sur la page suivante")
-                    break
-                logger.info("%s commande(s) sur la page %s", len(orders), page_num)
+                    logger.warning("Aucune commande pour la période %s; passage à la suivante.", period_option)
+                    continue
+
+                page_num = 1
+                while True:
+                    order_triples: List[Tuple[Any, str, Optional[date_type]]] = []
+                    for i, order in enumerate(orders):
+                        oid = self._get_order_id_from_element(order, global_order_index + i)
+                        inv_date = self._parse_order_date_from_element(order)
+                        order_triples.append((order, oid, inv_date))
+
+                    filtered = self._filter_orders_by_date(
+                        order_triples,
+                        year=year,
+                        month=month,
+                        months=months,
+                        date_start_str=date_start,
+                        date_end_str=date_end,
+                    )
+                    if any([date_start, date_end, year is not None, month is not None, months]):
+                        logger.info(
+                            "Filtre date (year=%s month=%s months=%s plage=%s..%s): %s -> %s commandes",
+                            year, month, months, date_start, date_end, len(order_triples), len(filtered)
+                        )
+
+                    to_process = min(len(filtered), max_invoices - count)
+                    for j in range(to_process):
+                        order, oid, inv_date = filtered[j]
+                        try:
+                            file_name = await self.download_invoice(
+                                order,
+                                order_index=global_order_index,
+                                order_id=oid,
+                                invoice_date=inv_date,
+                                force_redownload=force_redownload,
+                            )
+                            if file_name:
+                                downloaded_files.append(file_name)
+                                count += 1
+                            global_order_index += 1
+                            time.sleep(1)
+                        except Exception as e:
+                            logger.warning("Erreur pour une commande: %s", e)
+                            global_order_index += 1
+                            continue
+
+                    if count >= max_invoices:
+                        logger.info("Limite de %s facture(s) atteinte", max_invoices)
+                        break
+
+                    if not self._has_next_orders_page():
+                        logger.info("Pas de page suivante pour la période %s", period_option)
+                        break
+                    if not self._go_to_next_orders_page():
+                        logger.warning("Impossible d'aller à la page suivante")
+                        break
+
+                    page_num += 1
+                    logger.info("Récupération des commandes - période %s, page %s...", period_option, page_num)
+                    orders = None
+                    for selector in order_selectors:
+                        try:
+                            orders = self.driver.find_elements(By.CSS_SELECTOR, selector)
+                            if orders and len(orders) > 0:
+                                break
+                        except Exception:
+                            continue
+                    if not orders or len(orders) == 0:
+                        logger.info("Aucune commande sur la page suivante")
+                        break
+                    logger.info("%s commande(s) sur la page %s", len(orders), page_num)
 
             logger.info("Téléchargement terminé: %s facture(s) téléchargée(s)", count)
             return {"count": count, "files": downloaded_files}

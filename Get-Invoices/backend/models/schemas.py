@@ -7,6 +7,10 @@ from typing import Annotated, List, Optional
 
 class DownloadRequest(BaseModel):
     """Requête pour télécharger des factures."""
+    provider: Optional[str] = Field(
+        default="amazon",
+        description="Fournisseur (amazon, fnac, free, …). Défaut: amazon"
+    )
     max_invoices: Optional[int] = Field(
         default=None,
         ge=1,
@@ -85,3 +89,16 @@ class OTPResponse(BaseModel):
         default=False,
         description="Indique si un code OTP est toujours requis"
     )
+
+
+class ProviderInfo(BaseModel):
+    """Information sur un fournisseur (liste /api/providers)."""
+    id: str
+    name: str
+    configured: bool = Field(description="True si identifiants/config disponibles")
+    implemented: bool = Field(description="True si le provider est implémenté")
+
+
+class ProvidersResponse(BaseModel):
+    """Réponse de la liste des fournisseurs."""
+    providers: List[ProviderInfo]

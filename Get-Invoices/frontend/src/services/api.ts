@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'http://localhost:8001';
 
 interface DownloadResponse {
   success: boolean;
@@ -20,12 +20,29 @@ interface OTPResponse {
   requires_otp: boolean;
 }
 
+export interface ProviderInfo {
+  id: string;
+  name: string;
+  configured: boolean;
+  implemented: boolean;
+}
+
+interface ProvidersResponse {
+  providers: ProviderInfo[];
+}
+
 export const getStatus = async (): Promise<StatusResponse> => {
   const response = await axios.get<StatusResponse>(`${API_BASE_URL}/api/status`);
   return response.data;
 };
 
+export const getProviders = async (): Promise<ProviderInfo[]> => {
+  const response = await axios.get<ProvidersResponse>(`${API_BASE_URL}/api/providers`);
+  return response.data.providers;
+};
+
 export interface DownloadParams {
+  provider?: string;
   max_invoices: number;
   year?: number;
   month?: number;
@@ -42,6 +59,7 @@ export const downloadInvoices = async (
     max_invoices: params.max_invoices,
     force_redownload: params.force_redownload ?? false,
   };
+  if (params.provider) body.provider = params.provider;
   if (params.year != null) body.year = params.year;
   if (params.month != null) body.month = params.month;
   if (params.months != null && params.months.length > 0) body.months = params.months;

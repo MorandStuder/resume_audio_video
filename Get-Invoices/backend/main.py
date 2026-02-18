@@ -1,11 +1,11 @@
 """
-Point d'entrée principal de l'API FastAPI pour le téléchargement de factures Amazon.
+Point d'entrée principal de l'API FastAPI (Get-Invoices V2 multi-fournisseurs).
 """
 import logging
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import AsyncIterator, Optional
+from typing import Any, AsyncIterator, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,8 +18,12 @@ from backend.models.schemas import (
     OTPRequest,
     OTPResponse,
     StatusResponse,
+    ProviderInfo,
+    ProvidersResponse,
 )
-from backend.services.amazon_downloader import AmazonInvoiceDownloader
+from backend.providers import PROVIDERS, PROVIDER_LABELS
+from backend.providers.amazon import AmazonProvider
+from backend.providers.freebox import FreeboxProvider
 
 
 class Settings(BaseSettings):
@@ -35,6 +39,9 @@ class Settings(BaseSettings):
     firefox_profile_path: Optional[str] = None  # Chemin vers le profil Firefox existant (session persistante)
     selenium_chrome_profile_dir: Optional[str] = None  # Répertoire de profil Chrome (session persistante, ex: ./browser_profile)
     selenium_keep_browser_open: bool = False  # Connexion continue : ne pas fermer le navigateur à l'arrêt de l'app
+    # Freebox (optionnel)
+    freebox_login: Optional[str] = None  # Identifiant Freebox (email @free.fr ou login Freebox)
+    freebox_password: Optional[str] = None
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -118,52 +125,84 @@ except Exception as e:
     logger.error("Assurez-vous que le fichier .env existe à la racine du projet")
     raise
 
-# Instance globale du downloader
-downloader: Optional[AmazonInvoiceDownloader] = None
+# Dictionnaire des downloaders par provider (V2 multi-fournisseurs)
+downloaders: dict[str, Any] = {}
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """
     Gestionnaire du cycle de vie de l'application.
-    Remplace les event handlers startup/shutdown dépréciés.
+    Initialise les providers configurés (Amazon par défaut) avec répertoire par fournisseur.
     """
-    global downloader
-    # Startup
-    try:
-        logger.info("Initialisation du téléchargeur Amazon...")
-        downloader = AmazonInvoiceDownloader(
-            email=settings.amazon_email,
-            password=settings.amazon_password,
-            download_path=settings.download_path,
-            headless=settings.selenium_headless,
-            timeout=settings.selenium_timeout,
-            manual_mode=settings.selenium_manual_mode,
-            browser=settings.selenium_browser,
-            firefox_profile_path=settings.firefox_profile_path,
-            chrome_user_data_dir=settings.selenium_chrome_profile_dir,
-            keep_browser_open=settings.selenium_keep_browser_open,
-        )
-        logger.info("Téléchargeur Amazon initialisé avec succès")
-    except Exception as e:
-        logger.error(f"Erreur lors de l'initialisation du téléchargeur: {str(e)}")
-        import traceback
-        logger.debug(traceback.format_exc())
-        downloader = None
+    global downloaders
+    downloaders = {}
+    base_path = Path(settings.download_path)
+
+    # Amazon : répertoire ./factures/amazon (ou DOWNLOAD_PATH/amazon)
+    if AmazonProvider.PROVIDER_ID in PROVIDERS:
+        try:
+            logger.info("Initialisation du provider Amazon...")
+            amazon_path = base_path / "amazon"
+            amazon_path.mkdir(parents=True, exist_ok=True)
+            downloaders[AmazonProvider.PROVIDER_ID] = AmazonProvider(
+                email=settings.amazon_email,
+                password=settings.amazon_password,
+                download_path=amazon_path,
+                headless=settings.selenium_headless,
+                timeout=settings.selenium_timeout,
+                manual_mode=settings.selenium_manual_mode,
+                browser=settings.selenium_browser,
+                firefox_profile_path=settings.firefox_profile_path,
+                chrome_user_data_dir=settings.selenium_chrome_profile_dir,
+                keep_browser_open=settings.selenium_keep_browser_open,
+            )
+            logger.info("Provider Amazon initialisé avec succès")
+        except Exception as e:
+            logger.error(f"Erreur lors de l'initialisation du provider Amazon: {str(e)}")
+            import traceback
+            logger.debug(traceback.format_exc())
+
+    # Freebox (si identifiants présents)
+    if FreeboxProvider.PROVIDER_ID in PROVIDERS:
+        if settings.freebox_login and settings.freebox_password:
+            try:
+                logger.info("Initialisation du provider Freebox...")
+                freebox_path = base_path / "freebox"
+                freebox_path.mkdir(parents=True, exist_ok=True)
+                downloaders[FreeboxProvider.PROVIDER_ID] = FreeboxProvider(
+                    login=settings.freebox_login,
+                    password=settings.freebox_password,
+                    download_path=freebox_path,
+                    headless=settings.selenium_headless,
+                    timeout=settings.selenium_timeout,
+                    browser=settings.selenium_browser,
+                    firefox_profile_path=settings.firefox_profile_path,
+                    chrome_user_data_dir=settings.selenium_chrome_profile_dir,
+                    keep_browser_open=settings.selenium_keep_browser_open,
+                )
+                logger.info("Provider Freebox initialisé avec succès")
+            except Exception as e:
+                logger.warning("Provider Freebox non initialisé: %s", e)
+        else:
+            logger.debug("Freebox non configuré (FREEBOX_LOGIN / FREEBOX_PASSWORD absents)")
 
     yield
 
-    # Shutdown
-    if downloader:
-        await downloader.close()
-        logger.info("Téléchargeur Amazon fermé")
+    # Shutdown : fermer tous les providers
+    for pid, prov in list(downloaders.items()):
+        try:
+            await prov.close()
+            logger.info("Provider %s fermé", pid)
+        except Exception as e:
+            logger.warning("Fermeture provider %s: %s", pid, e)
 
 
-# Initialisation de l'application
+# Initialisation de l'application (V2 : multi-fournisseurs)
 app = FastAPI(
-    title="Amazon Invoice Downloader API",
-    description="API pour télécharger automatiquement les factures Amazon",
-    version="1.0.0",
+    title="Get-Invoices API",
+    description="API pour télécharger automatiquement les factures (Amazon, FNAC, Free, …)",
+    version="2.0.0",
     lifespan=lifespan
 )
 
@@ -177,32 +216,61 @@ app.add_middleware(
 )
 
 
+def _get_downloader(provider_id: str | None) -> Any:
+    """Retourne le downloader du provider ou None si non disponible."""
+    pid = (provider_id or "amazon").strip().lower()
+    return downloaders.get(pid)
+
+
 @app.get("/", response_model=StatusResponse)
 async def root() -> StatusResponse:
     """Endpoint de statut de l'API."""
     return StatusResponse(
         status="ok",
-        message="API Amazon Invoice Downloader opérationnelle"
+        message="API Get-Invoices (V2 multi-fournisseurs) opérationnelle"
     )
+
+
+@app.get("/api/providers", response_model=ProvidersResponse)
+async def list_providers() -> ProvidersResponse:
+    """Liste les fournisseurs disponibles et leur statut (configuré, implémenté)."""
+    providers_list = []
+    for pid, name in PROVIDER_LABELS.items():
+        implemented = pid in PROVIDERS
+        configured = False
+        if pid == "amazon":
+            configured = (
+                bool(settings.amazon_email)
+                and settings.amazon_email != "votre_email@example.com"
+                and bool(settings.amazon_password)
+                and settings.amazon_password != "votre_mot_de_passe"
+            )
+        elif pid == "freebox":
+            configured = bool(settings.freebox_login) and bool(settings.freebox_password)
+        if implemented:
+            configured = configured or pid in downloaders
+        providers_list.append(
+            ProviderInfo(id=pid, name=name, configured=configured, implemented=implemented)
+        )
+    return ProvidersResponse(providers=providers_list)
 
 
 @app.get("/api/debug")
 async def debug_info() -> dict:
     """Endpoint de debug pour diagnostiquer les problèmes."""
+    amazon = _get_downloader("amazon")
     debug_info = {
-        "downloader_initialized": downloader is not None,
+        "downloaders": list(downloaders.keys()),
         "settings_loaded": settings is not None,
         "has_email": bool(settings.amazon_email) if settings else False,
         "has_password": bool(settings.amazon_password) if settings else False,
     }
-    
-    if downloader:
+    if amazon:
         try:
-            debug_info["driver_initialized"] = downloader.driver is not None
-            debug_info["2fa_required"] = downloader.is_2fa_required()
+            debug_info["driver_initialized"] = amazon._downloader.driver is not None
+            debug_info["2fa_required"] = amazon.is_2fa_required()
         except Exception as e:
             debug_info["driver_error"] = str(e)
-    
     return debug_info
 
 
@@ -212,25 +280,32 @@ async def download_invoices(
     otp_code: Optional[str] = None
 ) -> DownloadResponse:
     """
-    Télécharge les factures Amazon.
-    
+    Télécharge les factures du fournisseur demandé (Amazon, etc.).
+
     Args:
-        request: Paramètres de téléchargement (nombre, période, etc.)
+        request: Paramètres dont provider (défaut: amazon), nombre, période, etc.
         otp_code: Code OTP pour la 2FA (optionnel)
-    
+
     Returns:
         Réponse avec le nombre de factures téléchargées ou demande de code OTP
     """
+    provider_id = (request.provider or "amazon").strip().lower()
+    downloader = _get_downloader(provider_id)
     if not downloader:
+        if provider_id in PROVIDER_LABELS and provider_id not in PROVIDERS:
+            raise HTTPException(
+                status_code=501,
+                detail=f"Le fournisseur '{provider_id}' n'est pas encore implémenté"
+            )
         raise HTTPException(
             status_code=503,
-            detail="Le téléchargeur n'est pas initialisé"
+            detail=f"Le fournisseur '{provider_id}' n'est pas configuré ou initialisé"
         )
     
     try:
         logger.info(
-            "Démarrage du téléchargement: max_invoices=%s year=%s month=%s months=%s date_start=%s date_end=%s force_redownload=%s otp=%s",
-            request.max_invoices, request.year, request.month, request.months,
+            "Démarrage téléchargement provider=%s max_invoices=%s year=%s month=%s months=%s date_start=%s date_end=%s force_redownload=%s otp=%s",
+            provider_id, request.max_invoices, request.year, request.month, request.months,
             request.date_start, request.date_end, request.force_redownload, "fourni" if otp_code else "non fourni"
         )
         result = await downloader.download_invoices(
@@ -243,27 +318,22 @@ async def download_invoices(
             otp_code=otp_code,
             force_redownload=request.force_redownload or False,
         )
-        
         return DownloadResponse(
             success=True,
             message=f"{result['count']} facture(s) téléchargée(s)",
             count=result["count"],
             files=result.get("files", [])
         )
-    
     except Exception as e:
         import traceback
         error_message = str(e)
-        error_traceback = traceback.format_exc()
         logger.error("Erreur lors du téléchargement: %s", error_message)
-        logger.debug("Traceback: %s", error_traceback)
-
-        if "Code 2FA requis" in error_message or (downloader and downloader.is_2fa_required()):
+        logger.debug("Traceback: %s", traceback.format_exc())
+        if "Code 2FA requis" in error_message or downloader.is_2fa_required():
             raise HTTPException(
                 status_code=401,
                 detail="Code 2FA requis - utilisez /api/submit-otp pour fournir le code"
             )
-
         raise HTTPException(
             status_code=500,
             detail=f"Erreur lors du téléchargement: {error_message}"
@@ -272,27 +342,25 @@ async def download_invoices(
 
 @app.get("/api/status", response_model=StatusResponse)
 async def get_status() -> StatusResponse:
-    """Retourne le statut du téléchargeur."""
+    """Retourne le statut du téléchargeur (Amazon par défaut)."""
+    downloader = _get_downloader("amazon")
     if not downloader:
         return StatusResponse(
             status="error",
-            message="Le téléchargeur n'est pas initialisé"
+            message="Le téléchargeur Amazon n'est pas initialisé"
         )
-    
     try:
-        # Vérifier si un code 2FA est requis
         if downloader.is_2fa_required():
             return StatusResponse(
                 status="otp_required",
                 message="Code 2FA requis - veuillez fournir le code OTP"
             )
-        
         return StatusResponse(
             status="ready",
             message="Le téléchargeur est prêt"
         )
     except Exception as e:
-        logger.error(f"Erreur lors de la vérification du statut: {str(e)}")
+        logger.error("Erreur lors de la vérification du statut: %s", e)
         return StatusResponse(
             status="error",
             message=f"Erreur lors de la vérification du statut: {str(e)}"
@@ -302,24 +370,16 @@ async def get_status() -> StatusResponse:
 @app.post("/api/submit-otp", response_model=OTPResponse)
 async def submit_otp(request: OTPRequest) -> OTPResponse:
     """
-    Soumet un code OTP pour l'authentification à deux facteurs.
-    
-    Args:
-        request: Requête contenant le code OTP
-    
-    Returns:
-        Réponse indiquant si le code est accepté
+    Soumet un code OTP pour l'authentification à deux facteurs (Amazon).
     """
+    downloader = _get_downloader("amazon")
     if not downloader:
         raise HTTPException(
             status_code=503,
             detail="Le téléchargeur n'est pas initialisé"
         )
-    
     try:
         logger.info("Soumission du code OTP...")
-        
-        # Essayer de soumettre le code OTP
         success = await downloader.submit_otp(request.otp_code)
         
         if success:
@@ -347,18 +407,13 @@ async def submit_otp(request: OTPRequest) -> OTPResponse:
 
 @app.get("/api/check-2fa", response_model=OTPResponse)
 async def check_2fa() -> OTPResponse:
-    """
-    Vérifie si un code 2FA est requis.
-    
-    Returns:
-        Réponse indiquant si un code 2FA est requis
-    """
+    """Vérifie si un code 2FA est requis (Amazon)."""
+    downloader = _get_downloader("amazon")
     if not downloader:
         raise HTTPException(
             status_code=503,
             detail="Le téléchargeur n'est pas initialisé"
         )
-    
     requires_otp = downloader.is_2fa_required()
     
     return OTPResponse(
@@ -370,5 +425,5 @@ async def check_2fa() -> OTPResponse:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)
 

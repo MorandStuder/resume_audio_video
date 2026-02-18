@@ -1,6 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import './DownloadForm.css';
 import type { DownloadParams } from '../services/api';
+import type { ProviderInfo } from '../services/api';
 
 interface DownloadResult {
   success: boolean;
@@ -10,6 +11,7 @@ interface DownloadResult {
 }
 
 interface DownloadFormProps {
+  providers: ProviderInfo[];
   onDownload: (params: DownloadParams) => void;
   loading: boolean;
   result: DownloadResult | null;
@@ -34,11 +36,25 @@ const MONTHS = [
 type FilterType = 'none' | 'year' | 'months' | 'range';
 
 const DownloadForm: React.FC<DownloadFormProps> = ({
+  providers,
   onDownload,
   loading,
   result,
   error,
 }) => {
+  const implementedAndConfigured = providers.filter(
+    (p) => p.implemented && p.configured
+  );
+  const firstAvailableId = implementedAndConfigured[0]?.id ?? 'amazon';
+  const [provider, setProvider] = useState<string>(firstAvailableId);
+
+  useEffect(() => {
+    const available = providers.filter((p) => p.implemented && p.configured);
+    if (available.length === 0) return;
+    const currentAvailable = available.some((p) => p.id === provider);
+    if (!currentAvailable) setProvider(available[0].id);
+  }, [providers]);
+
   const [maxInvoices, setMaxInvoices] = useState<number>(100);
   const [filterType, setFilterType] = useState<FilterType>('none');
   const [year, setYear] = useState<number | ''>(new Date().getFullYear());
@@ -56,6 +72,7 @@ const DownloadForm: React.FC<DownloadFormProps> = ({
   const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     const params: DownloadParams = {
+      provider,
       max_invoices: maxInvoices,
       force_redownload: forceRedownload,
     };
@@ -80,6 +97,29 @@ const DownloadForm: React.FC<DownloadFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className="download-form">
+      <div className="form-group">
+        <label htmlFor="provider">Fournisseur</label>
+        <select
+          id="provider"
+          value={provider}
+          onChange={(e): void => setProvider(e.target.value)}
+        >
+          {providers.length === 0 ? (
+            <option value="amazon">Amazon (chargement…)</option>
+          ) : (
+            providers.map((p) => (
+              <option
+                key={p.id}
+                value={p.id}
+                disabled={!p.implemented || !p.configured}
+              >
+                {p.name}
+                {!p.implemented ? ' (à venir)' : !p.configured ? ' (non configuré)' : ''}
+              </option>
+            ))
+          )}
+        </select>
+      </div>
       <div className="form-group">
         <label htmlFor="maxInvoices">
           Nombre maximum de factures à télécharger

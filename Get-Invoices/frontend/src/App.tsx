@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import DownloadForm from './components/DownloadForm';
 import StatusDisplay from './components/StatusDisplay';
-import { downloadInvoices, getStatus, submitOTP, type DownloadParams } from './services/api';
+import {
+  downloadInvoices,
+  getStatus,
+  getProviders,
+  submitOTP,
+  type DownloadParams,
+  type ProviderInfo,
+} from './services/api';
 import axios from 'axios';
 
 interface DownloadResult {
@@ -21,9 +28,16 @@ const App: React.FC = () => {
   const [otpCode, setOtpCode] = useState<string>('');
   const [otpError, setOtpError] = useState<string | null>(null);
   const [pendingDownload, setPendingDownload] = useState<DownloadParams | null>(null);
+  const [providers, setProviders] = useState<ProviderInfo[]>([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     checkStatus();
+  }, []);
+
+  useEffect(() => {
+    getProviders()
+      .then(setProviders)
+      .catch(() => setProviders([]));
   }, []);
 
   const checkStatus = async (): Promise<void> => {
@@ -107,8 +121,8 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>📦 Téléchargeur de Factures Amazon</h1>
-        <p className="subtitle">Téléchargez automatiquement vos factures</p>
+        <h1>📦 Get-Invoices (V2)</h1>
+        <p className="subtitle">Téléchargez vos factures Amazon, FNAC, Free…</p>
       </header>
 
       <main className="App-main">
@@ -169,6 +183,7 @@ const App: React.FC = () => {
           </div>
         ) : (
           <DownloadForm
+            providers={providers}
             onDownload={handleDownload}
             loading={loading}
             result={result}
