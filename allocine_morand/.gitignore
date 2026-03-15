@@ -1,17 +1,22 @@
 # Fichiers de configuration
 config.json
 *.env
-config.py 
+config.py
+.env
 
 # Dossiers de sortie
 output/
 *.csv
 
-# Autres
+# Fichiers de debug HTML générés par le scraper
+*.html
+
+# Cache Python
 __pycache__/
 *.py[cod]
 *$py.class
-.env
+
+# Environnements virtuels
 .venv
 venv/
 ENV/
@@ -26,6 +31,5 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Ajouter cette ligne
-
+# Archives
 OLD/

@@ -1,512 +1,750 @@
+import concurrent.futures
+import logging
+import os
+import re
+import subprocess
 import time
+from pathlib import Path
+from typing import Optional
+from urllib.parse import urljoin
+
+import psutil
+import requests
+from bs4 import BeautifulSoup, Tag
+from dotenv import load_dotenv
+import pandas as pd
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
-import pandas as pd
-from config import ALLOCINE_EMAIL, ALLOCINE_PASSWORD
-#from credentials_manager import get_credentials, save_credentials
-import psutil
-import re
+
+load_dotenv()
+
+ALLOCINE_EMAIL: str = os.environ.get("ALLOCINE_EMAIL", "")
+ALLOCINE_PASSWORD: str = os.environ.get("ALLOCINE_PASSWORD", "")
+
+OUTPUT_DIR = Path("output")
+DEBUG_PORT = 9222
+BASE_URL = "https://www.allocine.fr"
+LOAD_MORE_SELECTOR = (
+    "button.button.button-default-full.button-md.load-more-button"
+)
+THUMBNAIL_SELECTOR = "figure.thumbnail"
+MAX_WORKERS = 10
+REQUEST_TIMEOUT = 15
+
+KNOWN_PLATFORMS: dict[str, str] = {
+    "netflix": "Netflix",
+    "prime video": "Amazon Prime Video",
+    "amazon prime": "Amazon Prime Video",
+    "disney+": "Disney+",
+    "disney +": "Disney+",
+    "canal+": "Canal+",
+    "canal +": "Canal+",
+    "canal vod": "Canal VOD",
+    "apple tv": "Apple TV+",
+    "ocs": "OCS",
+    "paramount+": "Paramount+",
+    "paramount +": "Paramount+",
+    "mycanal": "MyCanal",
+}
+
+logger = logging.getLogger(__name__)
 
 
 class AllocineScraper:
-    def __init__(self):
+    @staticmethod
+    def _make_silent_service() -> Service:
+        """Crée un Service Chrome avec les logs supprimés."""
+        return Service(log_output=subprocess.DEVNULL)
+
+    @staticmethod
+    def _make_silent_options() -> webdriver.ChromeOptions:
+        """Crée des ChromeOptions silencieuses (sans logs internes Chrome)."""
+        options = webdriver.ChromeOptions()
+        options.page_load_strategy = "eager"
+        options.add_argument("--log-level=3")
+        options.add_argument("--silent")
+        options.add_argument("--disable-logging")
+        options.add_experimental_option(
+            "excludeSwitches", ["enable-logging"]
+        )
+        return options
+
+    def __init__(self) -> None:
         try:
-            # Essayer de se connecter à une session Chrome existante
-            options = webdriver.ChromeOptions()
+            options = self._make_silent_options()
             options.add_experimental_option(
-                "debuggerAddress", 
-                "127.0.0.1:9222"
+                "debuggerAddress",
+                f"127.0.0.1:{DEBUG_PORT}",
             )
-            self.driver = webdriver.Chrome(options=options)
-            print("✅ Connexion à la session Chrome existante")
+            self.driver = webdriver.Chrome(
+                service=self._make_silent_service(), options=options
+            )
+            logger.info("Connexion à la session Chrome existante")
         except Exception:
-            print("Démarrage d'une nouvelle session Chrome...")
-            # Si pas de session existante, lancer Chrome avec le port de débogage
-            options = webdriver.ChromeOptions()
-            options.add_argument('--start-maximized')
-            options.add_argument('--disable-notifications')
-            options.add_argument('--remote-debugging-port=9222')
-            # Remplacer detach par un autre moyen de garder le navigateur ouvert
+            logger.info("Démarrage d'une nouvelle session Chrome...")
+            options = self._make_silent_options()
+            options.add_argument("--start-maximized")
+            options.add_argument("--disable-notifications")
+            options.add_argument(f"--remote-debugging-port={DEBUG_PORT}")
             options.add_experimental_option("detach", True)
-            self.driver = webdriver.Chrome(options=options)
-        
+            self.driver = webdriver.Chrome(
+                service=self._make_silent_service(), options=options
+            )
+
         self.wait = WebDriverWait(self.driver, 10)
 
-    def login(self, email, password):
-        """Connexion à Allocine"""
+    def login(self, email: str, password: str) -> bool:
+        """Connexion à Allociné.
+
+        Args:
+            email: Adresse email du compte Allociné.
+            password: Mot de passe du compte Allociné.
+
+        Returns:
+            True si la connexion a réussi, False sinon.
+        """
         try:
-            print("Connexion à Allocine...")
-            # Aller d'abord sur la page principale pour gérer les cookies
+            logger.info("Connexion à Allociné...")
             self.driver.get("https://mon.allocine.fr/connexion")
             time.sleep(3)
-            
+
             # Accepter les cookies
             try:
-                print("Recherche du bouton de cookies...")
+                logger.debug("Recherche du bouton de cookies...")
                 cookie_button = self.wait.until(
                     EC.element_to_be_clickable((
-                        By.CSS_SELECTOR, 
-                        "button.didomi-components-button--primary"
+                        By.CSS_SELECTOR,
+                        "button.didomi-components-button--primary",
                     ))
                 )
                 time.sleep(1)
                 self.driver.execute_script(
-                    "arguments[0].click();", 
-                    cookie_button
+                    "arguments[0].click();", cookie_button
                 )
-                print("✅ Cookies acceptés")
+                logger.info("Cookies acceptés")
                 time.sleep(3)
-            except Exception as e:
-                print(f"⚠️ Erreur lors de l'acceptation des cookies: {str(e)}")
-                print("Tentative de connexion sans accepter les cookies...")
-            
-            # Continuer avec la connexion
-            print("Redirection vers la page de connexion...")
+            except Exception as exc:
+                logger.warning("Acceptation des cookies échouée : %s", exc)
+                # Tenter de fermer l'overlay via JS si le bouton est bloqué
+                try:
+                    self.driver.execute_script(
+                        "document.querySelector('.didomi-popup-container')"
+                        "?.remove();"
+                    )
+                except Exception:
+                    pass
+
             self.driver.get("https://mon.allocine.fr/connexion/")
             time.sleep(3)
-            
-            # Vérifier si on est déjà connecté
+
             if "connexion" not in self.driver.current_url.lower():
-                print("✅ Déjà connecté")
+                logger.info("Déjà connecté")
                 return True
-            
-            # Remplir le formulaire de connexion
-            print("Remplissage du formulaire...")
+
+            logger.debug("Remplissage du formulaire de connexion...")
             try:
                 email_field = self.wait.until(
                     EC.presence_of_element_located((By.NAME, "email"))
                 )
-                print("Champ email trouvé")
-            except Exception as e:
-                print(f"❌ Impossible de trouver le champ email: {str(e)}")
+            except Exception as exc:
+                logger.error("Champ email introuvable : %s", exc)
                 return False
-            
-            # Saisie lente de l'email
+
             for char in email:
                 email_field.send_keys(char)
                 time.sleep(0.1)
-            
+
             time.sleep(1)
-            
+
             try:
-                password_field = self.driver.find_element(By.NAME, "password")
-                print("Champ mot de passe trouvé")
-            except Exception as e:
-                print(f"❌ Impossible de trouver le champ mot de passe: {str(e)}")
+                password_field = self.driver.find_element(
+                    By.NAME, "password"
+                )
+            except Exception as exc:
+                logger.error("Champ mot de passe introuvable : %s", exc)
                 return False
-            
-            # Saisie lente du mot de passe
+
             for char in password:
                 password_field.send_keys(char)
                 time.sleep(0.1)
-            
+
             time.sleep(2)
-            
+
             try:
                 submit_button = self.driver.find_element(
-                    By.CSS_SELECTOR, 
-                    "button[type='submit']"
+                    By.CSS_SELECTOR, "button[type='submit']"
                 )
-                print("Bouton de soumission trouvé")
-            except Exception as e:
-                print(f"❌ Impossible de trouver le bouton de soumission: {str(e)}")
+            except Exception as exc:
+                logger.error("Bouton de soumission introuvable : %s", exc)
                 return False
-            
-            submit_button.click()
-            print("Formulaire soumis")
-            
-            time.sleep(5)
-            
-            # Vérifier si la connexion a réussi
-            if "connexion" not in self.driver.current_url.lower():
-                print("✅ Connexion réussie!")
+
+            self.driver.execute_script(
+                "arguments[0].click();", submit_button
+            )
+            logger.debug("Formulaire soumis")
+
+            # Attendre la redirection post-login (max 10s)
+            try:
+                self.wait.until(
+                    lambda d: "connexion"
+                    not in d.current_url.lower()
+                )
+                logger.info("Connexion réussie")
                 return True
-            else:
-                print("❌ La connexion semble avoir échoué")
+            except Exception:
+                logger.error("La connexion semble avoir échoué")
                 return False
-            
-        except Exception as e:
-            print(f"❌ Erreur lors de la connexion: {str(e)}")
+
+        except Exception as exc:
+            logger.error("Erreur lors de la connexion : %s", exc)
             return False
 
-    def _get_total_films_count(self, url):
-        """Récupère le nombre total de films"""
+    def _get_total_films_count(
+        self, url: str, href_pattern: str = "vus"
+    ) -> int:
+        """Récupère le nombre total de films depuis le menu de navigation.
+
+        Args:
+            url: URL de la page de liste.
+            href_pattern: Motif de l'href à chercher dans le menu
+                (ex: "vus", "envie-de-voir").
+
+        Returns:
+            Nombre total de films, ou 0 si non trouvé.
+        """
         try:
             self.driver.get(url)
             time.sleep(3)
-            
-            total_count_elem = self.wait.until(
-                EC.presence_of_element_located((
-                    By.CSS_SELECTOR, 
-                    'a.userspace-submenu-item[href*="vus"]'
-                ))
+
+            # Plusieurs sélecteurs possibles selon la version d'Allociné
+            selectors = [
+                f'a.userspace-submenu-item[href*="{href_pattern}"]',
+                f'a[href*="{href_pattern}"].submenu-item',
+                f'nav a[href*="{href_pattern}"]',
+                f'a[href*="{href_pattern}"]',
+            ]
+
+            count_text: Optional[str] = None
+            for selector in selectors:
+                try:
+                    elem = WebDriverWait(self.driver, 5).until(
+                        EC.presence_of_element_located(
+                            (By.CSS_SELECTOR, selector)
+                        )
+                    )
+                    count_text = elem.text
+                    logger.debug(
+                        "Compteur trouvé via '%s' : %s",
+                        selector,
+                        count_text,
+                    )
+                    break
+                except Exception:
+                    continue
+
+            if count_text:
+                match = re.search(r"\((\d+)\)", count_text)
+                if match:
+                    total_films = int(match.group(1))
+                    logger.info(
+                        "Nombre total de films : %d", total_films
+                    )
+                    return total_films
+
+            # Compteur introuvable → renvoyer 0 = "charger tout jusqu'au bout"
+            logger.warning(
+                "Compteur de films introuvable via tous les sélecteurs. "
+                "Mode 'charger tout' activé (clic jusqu'à disparition du "
+                "bouton 'Voir plus')."
             )
-            count_text = total_count_elem.text
-            match = re.search(r'\((\d+)\)', count_text)
-            if match:
-                total_films = int(match.group(1))
-                print(f"\nNombre total de films à récupérer: {total_films}")
-                return total_films
-            else:
-                print("Nombre de films non trouvé dans le texte")
-                return 0
-        except Exception as e:
-            print(f"Erreur lors de la récupération du nombre total: {str(e)}")
+            return 0
+        except Exception as exc:
+            logger.error(
+                "Erreur lors de la récupération du nombre total : %s", exc
+            )
             return 0
 
-    def _load_all_films(self, total_films):
-        """Charge tous les films en cliquant sur 'Voir plus'"""
+    def _load_all_films(self, total_films: int) -> None:
+        """Charge tous les films en cliquant sur 'Voir plus'.
+
+        Args:
+            total_films: Nombre total de films à charger (0 = charger tout).
+        """
         while True:
             try:
                 self.wait.until(
                     EC.presence_of_all_elements_located((
-                        By.CSS_SELECTOR, 
-                        "figure.thumbnail"
+                        By.CSS_SELECTOR, THUMBNAIL_SELECTOR
                     ))
                 )
                 time.sleep(2)
-                
-                current_films = len(self.driver.find_elements(
-                    By.CSS_SELECTOR, 
-                    "figure.thumbnail"
-                ))
-                print(f"\nFilms affichés: {current_films}/{total_films}")
-                
-                if current_films >= total_films:
-                    print("Tous les films sont affichés")
+
+                current_films = len(
+                    self.driver.find_elements(
+                        By.CSS_SELECTOR, THUMBNAIL_SELECTOR
+                    )
+                )
+                if total_films > 0:
+                    logger.info(
+                        "Films affichés : %d/%d", current_films, total_films
+                    )
+                else:
+                    logger.info(
+                        "Films affichés : %d (total inconnu)", current_films
+                    )
+
+                if total_films > 0 and current_films >= total_films:
+                    logger.info("Tous les films sont affichés")
                     break
-                    
+
                 self.driver.execute_script(
                     "window.scrollTo(0, document.body.scrollHeight);"
                 )
                 time.sleep(2)
-                
+
                 try:
                     voir_plus = self.wait.until(
                         EC.element_to_be_clickable((
-                            By.CSS_SELECTOR, 
-                            'button.button.button-default-full.button-md.load-more-button'
+                            By.CSS_SELECTOR, LOAD_MORE_SELECTOR
                         ))
                     )
-                    
                     self.driver.execute_script(
-                        "arguments[0].scrollIntoView(true);", 
-                        voir_plus
+                        "arguments[0].scrollIntoView(true);", voir_plus
                     )
                     time.sleep(1)
-                    
                     self.driver.execute_script(
-                        "arguments[0].click();", 
-                        voir_plus
+                        "arguments[0].click();", voir_plus
                     )
-                    print("Clic sur 'Voir plus'")
-                    time.sleep(3)
-                    
+                    logger.debug("Clic sur 'Voir plus'")
                     self.wait.until(
-                        lambda x: len(x.find_elements(
-                            By.CSS_SELECTOR, 
-                            "figure.thumbnail"
-                        )) > current_films
+                        lambda d: len(
+                            d.find_elements(
+                                By.CSS_SELECTOR, THUMBNAIL_SELECTOR
+                            )
+                        ) > current_films
                     )
-                    
-                except Exception as e:
-                    print("Plus de bouton 'Voir plus' trouvé ou erreur lors du chargement")
-                    print(f"Erreur: {str(e)}")
+                except Exception as exc:
+                    logger.warning(
+                        "Bouton 'Voir plus' introuvable : %s", exc
+                    )
                     break
-                    
-            except Exception as e:
-                print(f"Erreur lors du comptage des films: {str(e)}")
+
+            except Exception as exc:
+                logger.error(
+                    "Erreur lors du chargement des films : %s", exc
+                )
                 break
 
-    def _extract_film_info(self, item):
-        """Extrait les informations détaillées d'un film"""
-        try:
-            # Obtenir l'URL du film
-            link = item.select_one('a.thumbnail-link')
-            if not link:
-                return None
-            
-            url = link.get('href', '')
-            if not url:
-                return None
+    def _get_requests_session(self) -> requests.Session:
+        """Crée une session requests à partir des cookies Selenium.
 
-            print(f"\nExtraction des détails du film: {url}")
-            
-            # Visiter la page du film
-            self.driver.execute_script("window.open('');")
-            self.driver.switch_to.window(self.driver.window_handles[-1])
-            self.driver.get(url)
-            time.sleep(2)
-            
-            # Parser la page du film
-            film_soup = BeautifulSoup(self.driver.page_source, 'html.parser')
-            
-            # Extraire les informations
-            titre = None
-            titre_selectors = [
-                'h1.title-entity',
+        Returns:
+            Session requests authentifiée avec les cookies du navigateur.
+        """
+        session = requests.Session()
+        for cookie in self.driver.get_cookies():
+            session.cookies.set(
+                name=cookie["name"],
+                value=cookie["value"],
+                domain=cookie.get("domain", ""),
+                path=cookie.get("path", "/"),
+            )
+        user_agent: str = self.driver.execute_script(
+            "return navigator.userAgent;"
+        )
+        session.headers.update({
+            "User-Agent": user_agent,
+            "Accept-Language": "fr-FR,fr;q=0.9",
+            "Accept": (
+                "text/html,application/xhtml+xml,"
+                "application/xml;q=0.9,*/*;q=0.8"
+            ),
+            "Referer": BASE_URL + "/",
+        })
+        return session
+
+    def _extract_url_from_thumbnail(self, item: Tag) -> Optional[str]:
+        """Extrait l'URL absolue d'un film depuis un thumbnail.
+
+        Args:
+            item: Élément BeautifulSoup <figure.thumbnail>.
+
+        Returns:
+            URL absolue du film, ou None si non trouvée.
+        """
+        link = item.select_one("a.thumbnail-link")
+        if link:
+            href = str(link.get("href", ""))
+            if href:
+                return urljoin(BASE_URL, href)
+        return None
+
+    def _extract_director(self, film_soup: BeautifulSoup) -> Optional[str]:
+        """Extrait le réalisateur depuis le HTML de la page film.
+
+        Args:
+            film_soup: Objet BeautifulSoup de la page film.
+
+        Returns:
+            Nom du réalisateur ou None si non trouvé.
+        """
+        elem = film_soup.select_one(".meta-body-direction a")
+        if elem:
+            return elem.get_text(strip=True)
+
+        for item in film_soup.find_all(class_="meta-body-item"):
+            if isinstance(item, Tag) and "Réalisateur" in item.get_text():
+                link = item.find("a")
+                if isinstance(link, Tag):
+                    return link.get_text(strip=True)
+
+        elem = film_soup.select_one('[data-testid="director"] a')
+        if elem:
+            return elem.get_text(strip=True)
+
+        return None
+
+    def _extract_release_date(
+        self, film_soup: BeautifulSoup
+    ) -> Optional[str]:
+        """Extrait la date de sortie depuis le HTML de la page film.
+
+        Args:
+            film_soup: Objet BeautifulSoup de la page film.
+
+        Returns:
+            Date de sortie ou None si non trouvée.
+        """
+        elem = film_soup.select_one('.meta-body-info [class*="date"]')
+        if elem:
+            return elem.get_text(strip=True)
+
+        for item in film_soup.find_all(class_="meta-body-item"):
+            if isinstance(item, Tag) and "Sortie" in item.get_text():
+                span = item.find("span")
+                if isinstance(span, Tag):
+                    return span.get_text(strip=True)
+
+        for selector in ('[class*="release-date"]', ".date"):
+            elem = film_soup.select_one(selector)
+            if elem:
+                return elem.get_text(strip=True)
+
+        return None
+
+    def _parse_film_html(
+        self, url: str, html: str
+    ) -> Optional[dict[str, str]]:
+        """Parse le HTML d'une page film et extrait les données.
+
+        Args:
+            url: URL du film (utilisée comme identifiant).
+            html: Contenu HTML brut de la page.
+
+        Returns:
+            Dictionnaire avec les données du film, ou None si échec.
+        """
+        try:
+            film_soup = BeautifulSoup(html, "lxml")
+
+            # Titre
+            titre: Optional[str] = None
+            for selector in (
+                "h1.title-entity",
                 'h1[data-testid="title-entity"]',
-                '.titlebar-title',
-                '.meta-title'
-            ]
-            for selector in titre_selectors:
-                titre_elem = film_soup.select_one(selector)
-                if titre_elem:
-                    titre = titre_elem.text.strip()
+                ".titlebar-title",
+                ".meta-title",
+                "h1",
+            ):
+                elem = film_soup.select_one(selector)
+                if elem:
+                    titre = elem.get_text(strip=True)
                     break
-            
-            realisateur = None
-            real_selectors = [
-                '.meta-body-direction a',
-                '.meta-body-item:contains("Réalisateur") a',
-                '[data-testid="director"] a'
-            ]
-            for selector in real_selectors:
-                real_elem = film_soup.select_one(selector)
-                if real_elem:
-                    realisateur = real_elem.text.strip()
-                    break
-            
+
+            realisateur = self._extract_director(film_soup)
+
             # Notes
-            note_presse = None
-            note_spec = None
-            try:
-                notes = film_soup.select('.stareval-note')
-                
-                if len(notes) >= 2:
-                    note_presse = notes[0].get_text(strip=True).replace(',', '.')
-                    print(f"Note presse trouvée: {note_presse}")
-                    
-                    note_spec = notes[1].get_text(strip=True).replace(',', '.')
-                    print(f"Note spectateurs trouvée: {note_spec}")
-                    
-                elif len(notes) == 1:
-                    note_spec = notes[0].get_text(strip=True).replace(',', '.')
-                    print(f"Note spectateurs trouvée: {note_spec}")
-                
-            except Exception as e:
-                print(f"Erreur lors de la recherche des notes: {str(e)}")
-            
+            note_presse: Optional[str] = None
+            note_spec: Optional[str] = None
+            notes = film_soup.select(".stareval-note")
+            if len(notes) >= 2:
+                note_presse = notes[0].get_text(strip=True).replace(",", ".")
+                note_spec = notes[1].get_text(strip=True).replace(",", ".")
+            elif len(notes) == 1:
+                note_spec = notes[0].get_text(strip=True).replace(",", ".")
+
             # Synopsis
-            synopsis = None
-            synopsis_selectors = [
-                '.content-txt',
-                '.synopsis-txt',
+            synopsis: Optional[str] = None
+            for selector in (
+                ".content-txt",
+                ".synopsis-txt",
                 '[class*="synopsis"]',
-                '.movie-synopsis',
-                '.synopsis-section .content-txt'
-            ]
-            
-            for selector in synopsis_selectors:
-                synopsis_elem = film_soup.select_one(selector)
-                if synopsis_elem:
-                    synopsis = synopsis_elem.text.strip()
-                    synopsis = ' '.join(synopsis.split())
-                    print(f"Synopsis trouvé ({len(synopsis)} caractères)")
+                ".movie-synopsis",
+            ):
+                elem = film_soup.select_one(selector)
+                if elem:
+                    synopsis = " ".join(elem.get_text(strip=True).split())
                     break
-            
-            # Plateformes
-            plateformes = []
-            try:
-                vod_section = film_soup.select_one('#ovw-products')
-                if vod_section:
-                    known_platforms = {
-                        'netflix': 'Netflix',
-                        'prime video': 'Amazon Prime Video',
-                        'amazon prime': 'Amazon Prime Video',
-                        'disney+': 'Disney+',
-                        'disney +': 'Disney+',
-                        'canal+': 'Canal+',
-                        'canal +': 'Canal+',
-                        'canal vod': 'Canal VOD',
-                        'apple tv': 'Apple TV+',
-                        'ocs': 'OCS',
-                        'paramount+': 'Paramount+',
-                        'paramount +': 'Paramount+',
-                        'mycanal': 'MyCanal'
-                    }
-                    
-                    vod_text = vod_section.get_text(strip=True).lower()
-                    print(f"Section VOD trouvée: {vod_text[:100]}...")
-                    
-                    for platform_key, platform_name in known_platforms.items():
-                        if platform_key in vod_text and platform_name not in plateformes:
-                            plateformes.append(platform_name)
-                            print(f"Plateforme trouvée: {platform_name}")
-                else:
-                    print("Section VOD non trouvée (#ovw-products)")
-            except Exception as e:
-                print(f"Erreur lors de la recherche des plateformes: {str(e)}")
-            
+
+            # Plateformes VOD
+            plateformes: list[str] = []
+            vod_section = film_soup.select_one("#ovw-products")
+            if vod_section:
+                vod_text = vod_section.get_text(strip=True).lower()
+                for key, name in KNOWN_PLATFORMS.items():
+                    if key in vod_text and name not in plateformes:
+                        plateformes.append(name)
+
             # Score de recommandation
-            score_reco = None
-            try:
-                score_elem = film_soup.select_one('.dZ6Qx4goXRfseGsQ2h8g')
-                if score_elem:
-                    score_reco = score_elem.text.strip()
-                    print(f"Score de recommandation trouvé: {score_reco}%")
-            except Exception as e:
-                print(f"Erreur lors de la recherche du score de recommandation: {str(e)}")
-            
-            # Date de sortie
-            date_sortie = None
-            try:
-                date_selectors = [
-                    '.meta-body-info [class*="date"]',
-                    '.meta-body-item:contains("Sortie") span',
-                    '[class*="release-date"]',
-                    '.date'
-                ]
-                
-                for selector in date_selectors:
-                    date_elem = film_soup.select_one(selector)
-                    if date_elem:
-                        date_sortie = date_elem.text.strip()
-                        print(f"Date de sortie trouvée: {date_sortie}")
-                        break
-            except Exception as e:
-                print(f"Erreur lors de la recherche de la date de sortie: {str(e)}")
-            
-            # Sauvegarder la page pour debug si aucune info trouvée
-            if not any([titre, realisateur, note_presse, note_spec]):
-                with open('debug_film.html', 'w', encoding='utf-8') as f:
-                    f.write(self.driver.page_source)
-                print("Page sauvegardée pour debug dans debug_film.html")
-            
-            # Fermer l'onglet et revenir à la liste
-            self.driver.close()
-            self.driver.switch_to.window(self.driver.window_handles[0])
-            
+            score_reco: Optional[str] = None
+            score_elem = film_soup.select_one(".dZ6Qx4goXRfseGsQ2h8g")
+            if score_elem:
+                score_reco = score_elem.get_text(strip=True)
+
+            date_sortie = self._extract_release_date(film_soup)
+
             return {
-                'titre': titre or 'Non trouvé',
-                'realisateur': realisateur or 'Non trouvé',
-                'date_sortie': date_sortie or 'Non disponible',
-                'synopsis': synopsis or 'Non disponible',
-                'note_presse': note_presse or 'Non disponible',
-                'note_spectateurs': note_spec or 'Non disponible',
-                'score_recommandation': score_reco or 'Non disponible',
-                'plateformes': ', '.join(plateformes) if plateformes else 'Non disponible',
-                'url': url
+                "titre": titre or "Non trouvé",
+                "realisateur": realisateur or "Non trouvé",
+                "date_sortie": date_sortie or "Non disponible",
+                "synopsis": synopsis or "Non disponible",
+                "note_presse": note_presse or "Non disponible",
+                "note_spectateurs": note_spec or "Non disponible",
+                "score_recommandation": score_reco or "Non disponible",
+                "plateformes": (
+                    ", ".join(plateformes)
+                    if plateformes
+                    else "Non disponible"
+                ),
+                "url": url,
             }
-            
-        except Exception as e:
-            print(f"Erreur lors de l'extraction des données: {str(e)}")
-            if len(self.driver.window_handles) > 1:
-                self.driver.close()
-                self.driver.switch_to.window(self.driver.window_handles[0])
+        except Exception as exc:
+            logger.error("Erreur parsing film %s : %s", url, exc)
             return None
 
-    def save_to_csv(self, films, filename='films_allocine.csv'):
-        """Sauvegarde les films dans un fichier CSV"""
-        if films:
-            all_platforms = set()
-            for film in films:
-                if film['plateformes'] != 'Non disponible':
-                    platforms = film['plateformes'].split(', ')
-                    all_platforms.update(platforms)
-            
-            platform_columns = sorted(list(all_platforms))
-            
-            formatted_films = []
-            for film in films:
-                film_data = {
-                    'Titre': film['titre'],
-                    'Réalisateur': film['realisateur'],
-                    'Date de sortie': film['date_sortie'],
-                    'Synopsis': film['synopsis'],
-                    'Note Presse': film['note_presse'],
-                    'Note Spectateurs': film['note_spectateurs'],
-                    'Score Recommandation': film['score_recommandation']
-                }
-                
-                available_platforms = (
-                    film['plateformes'].split(', ') 
-                    if film['plateformes'] != 'Non disponible' 
-                    else []
-                )
-                for platform in platform_columns:
-                    film_data[platform] = (
-                        'X' if platform in available_platforms else ''
-                    )
-                
-                film_data['URL'] = film['url']
-                formatted_films.append(film_data)
-            
-            df = pd.DataFrame(formatted_films)
-            
-            columns_order = [
-                'Titre', 'Réalisateur', 'Date de sortie', 
-                'Synopsis', 'Note Presse', 'Note Spectateurs', 
-                'Score Recommandation'
-            ] + platform_columns + ['URL']
-            
-            df = df[columns_order]
-            
-            try:
-                df.to_csv(filename, index=False, encoding='utf-8-sig', sep=';')
-                print(f"\n✅ {len(films)} films sauvegardés dans {filename}")
-            except PermissionError:
-                print(f"\n❌ Impossible de sauvegarder le fichier {filename}")
-                print("Le fichier est probablement ouvert dans un autre programme.")
-                input("Veuillez fermer le fichier et appuyer sur Entrée pour réessayer...")
-                
-                try:
-                    df.to_csv(filename, index=False, encoding='utf-8-sig', sep=';')
-                    print(f"\n✅ {len(films)} films sauvegardés dans {filename}")
-                except Exception as e:
-                    print(f"\n❌ Échec de la sauvegarde: {str(e)}")
-                    return
-        else:
-            print("\n❌ Aucun film à sauvegarder")
+    def _fetch_film(
+        self, session: requests.Session, url: str
+    ) -> Optional[dict[str, str]]:
+        """Fetche et parse une page film via requests.
 
-    def close(self):
-        """Ferme le navigateur"""
-        pass
+        Args:
+            session: Session requests authentifiée.
+            url: URL absolue du film.
 
-
-def is_chrome_running_with_debug_port():
-    """Vérifie si Chrome est déjà lancé avec le port de débogage"""
-    for proc in psutil.process_iter(['name', 'cmdline']):
+        Returns:
+            Données du film ou None si échec.
+        """
         try:
-            if proc.info['name'] == 'chrome.exe':
-                cmdline = proc.info['cmdline']
-                if cmdline and '--remote-debugging-port=9222' in cmdline:
+            response = session.get(url, timeout=REQUEST_TIMEOUT)
+            response.raise_for_status()
+            return self._parse_film_html(url, response.text)
+        except Exception as exc:
+            logger.error("Erreur fetch %s : %s", url, exc)
+            return None
+
+    def extract_films(
+        self,
+        urls: list[str],
+        session: requests.Session,
+        max_workers: int = MAX_WORKERS,
+    ) -> list[dict[str, str]]:
+        """Extrait les infos de plusieurs films en parallèle via requests.
+
+        L'ordre de la liste retournée correspond à l'ordre des URLs en entrée.
+
+        Args:
+            urls: URLs absolues des films à extraire.
+            session: Session requests authentifiée.
+            max_workers: Nombre de threads parallèles.
+
+        Returns:
+            Liste des données films (les échecs sont exclus).
+        """
+        total = len(urls)
+        results: list[Optional[dict[str, str]]] = [None] * total
+        completed = 0
+
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=max_workers
+        ) as executor:
+            future_to_index = {
+                executor.submit(self._fetch_film, session, url): i
+                for i, url in enumerate(urls)
+            }
+            for future in concurrent.futures.as_completed(future_to_index):
+                i = future_to_index[future]
+                result = future.result()
+                results[i] = result
+                completed += 1
+                if result:
+                    logger.info(
+                        "Film %d/%d : %s",
+                        completed,
+                        total,
+                        result["titre"],
+                    )
+                else:
+                    logger.warning(
+                        "Film %d/%d introuvable : %s",
+                        completed,
+                        total,
+                        urls[i],
+                    )
+
+        return [r for r in results if r is not None]
+
+    def save_to_csv(
+        self,
+        films: list[dict[str, str]],
+        filename: str = "films_allocine.csv",
+    ) -> None:
+        """Sauvegarde les films dans un fichier CSV.
+
+        Args:
+            films: Liste des données films.
+            filename: Chemin complet du fichier de sortie.
+        """
+        if not films:
+            logger.warning("Aucun film à sauvegarder")
+            return
+
+        all_platforms: set[str] = set()
+        for film in films:
+            if film["plateformes"] != "Non disponible":
+                all_platforms.update(film["plateformes"].split(", "))
+
+        platform_columns = sorted(all_platforms)
+
+        formatted_films = []
+        for film in films:
+            available = (
+                film["plateformes"].split(", ")
+                if film["plateformes"] != "Non disponible"
+                else []
+            )
+            row: dict[str, str] = {
+                "Titre": film["titre"],
+                "Réalisateur": film["realisateur"],
+                "Date de sortie": film["date_sortie"],
+                "Synopsis": film["synopsis"],
+                "Note Presse": film["note_presse"],
+                "Note Spectateurs": film["note_spectateurs"],
+                "Score Recommandation": film["score_recommandation"],
+            }
+            for platform in platform_columns:
+                row[platform] = "X" if platform in available else ""
+            row["URL"] = film["url"]
+            formatted_films.append(row)
+
+        df = pd.DataFrame(formatted_films)
+        columns_order = (
+            [
+                "Titre",
+                "Réalisateur",
+                "Date de sortie",
+                "Synopsis",
+                "Note Presse",
+                "Note Spectateurs",
+                "Score Recommandation",
+            ]
+            + list(platform_columns)
+            + ["URL"]
+        )
+        df = df[columns_order]
+
+        self._write_csv(df, filename, len(films))
+
+    def _write_csv(
+        self, df: pd.DataFrame, filename: str, count: int
+    ) -> None:
+        """Écrit le DataFrame en CSV avec gestion du fichier ouvert.
+
+        Args:
+            df: DataFrame à écrire.
+            filename: Chemin du fichier de sortie.
+            count: Nombre de films (pour le message de confirmation).
+        """
+        try:
+            df.to_csv(filename, index=False, encoding="utf-8-sig", sep=";")
+            logger.info("%d films sauvegardés dans %s", count, filename)
+        except PermissionError:
+            logger.error(
+                "Fichier %s ouvert ailleurs, fermer puis Entrée", filename
+            )
+            input(
+                "Veuillez fermer le fichier et appuyer sur Entrée "
+                "pour réessayer..."
+            )
+            try:
+                df.to_csv(
+                    filename, index=False, encoding="utf-8-sig", sep=";"
+                )
+                logger.info(
+                    "%d films sauvegardés dans %s", count, filename
+                )
+            except Exception as exc:
+                logger.error("Échec de la sauvegarde : %s", exc)
+
+    def close(self) -> None:
+        """Ferme le navigateur proprement."""
+        try:
+            self.driver.quit()
+        except Exception as exc:
+            logger.warning(
+                "Erreur lors de la fermeture du navigateur : %s", exc
+            )
+
+
+def is_chrome_running_with_debug_port() -> bool:
+    """Vérifie si Chrome tourne déjà avec le port de débogage activé.
+
+    Returns:
+        True si Chrome est lancé avec --remote-debugging-port=9222.
+    """
+    for proc in psutil.process_iter(["name", "cmdline"]):
+        try:
+            if proc.info["name"] == "chrome.exe":
+                cmdline = proc.info["cmdline"]
+                debug_flag = f"--remote-debugging-port={DEBUG_PORT}"
+                if cmdline and debug_flag in cmdline:
                     return True
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
     return False
 
 
-def main():
+def main() -> None:
     scraper = AllocineScraper()
-    
     try:
-        # Vérifier si déjà connecté en allant sur la watchlist
-        print("Vérification de la connexion...")
+        logger.info("Vérification de la connexion...")
         scraper.driver.get("https://mon.allocine.fr/mes-films/envie-de-voir/")
         time.sleep(3)
-        
-        # Si on est redirigé vers la page de connexion, se connecter
+
         if "connexion" in scraper.driver.current_url.lower():
-            print("Session expirée, reconnexion nécessaire...")
-            
+            logger.info("Session expirée, reconnexion nécessaire...")
             if not scraper.login(ALLOCINE_EMAIL, ALLOCINE_PASSWORD):
-                print("\n❌ Échec de la connexion automatique")
-                input("Veuillez vous connecter manuellement puis appuyez sur Entrée...")
+                logger.error("Échec de la connexion automatique")
+                input(
+                    "Veuillez vous connecter manuellement "
+                    "puis appuyez sur Entrée..."
+                )
         else:
-            print("✅ Déjà connecté")
-        
-        # Récupération des films
-        films = scraper.get_watchlist()
-        # Sauvegarde
+            logger.info("Déjà connecté")
+
+        films = scraper.get_watchlist()  # type: ignore[attr-defined]
         scraper.save_to_csv(films)
-        
-    except Exception as e:
-        print(f"Une erreur est survenue: {str(e)}")
+    except Exception as exc:
+        logger.error("Erreur inattendue : %s", exc)
+    finally:
+        scraper.close()
 
 
 if __name__ == "__main__":
-    main() 
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s : %(message)s",
+    )
+    main()
